@@ -97,7 +97,7 @@ GitHub PR / Git Diff
 ## 6. Tech Stack
 - **Runtime**: Node.js (v20+)
 - **Server**: Express
-- **Testing**: Vitest (68 unit & integration tests)
+- **Testing**: Vitest (70 unit & integration tests)
 - **AI / LLM**: Open-weight Qwen 2.5 7B (via OpenAI-compatible endpoint / vLLM / Ollama)
 - **UI Dashboard**: Interactive Web Studio with SVG Visual Impact Graph & 1-Click Remediation
 - **CI / CD**: GitHub Actions CI + Reusable `action.yml`
@@ -197,12 +197,17 @@ See the `examples/` directory for verified scenarios covering the hackathon requ
 
 ---
 
-## 15. Testing
+## 15. Testing & Benchmarking
 Run the test suite with Vitest:
 ```bash
 npm test
 ```
-All 68 unit, integration, and regression tests run deterministically in < 600ms using mocked LLM responses.
+All 70 unit, integration, and live golden scenario tests run deterministically in < 600ms using mocked LLM responses.
+
+Run the live evaluation benchmark suite across all 6 problem scenarios:
+```bash
+npm run benchmark
+```
 
 ---
 

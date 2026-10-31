@@ -11,7 +11,7 @@ const OBJECT_PROPERTY_PATTERN = /^\s*['"]?([a-zA-Z0-9_]+)['"]?\s*:\s*([^,;]+)/;
 const CLI_FLAG_PATTERN = /add_argument\s*\(\s*['"](--[a-zA-Z0-9_-]+)['"]|\.option\s*\(\s*['"](?:-[a-zA-Z0-9],\s*)?(--[a-zA-Z0-9_-]+)/;
 const BARE_FLAG_PATTERN = /(--[a-zA-Z0-9_-]{2,})/;
 
-const FUNCTION_PATTERN = /(?:function\s+([a-zA-Z0-9_]+)|def\s+([a-zA-Z0-9_]+)|const\s+([a-zA-Z0-9_]+)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>)/;
+const FUNCTION_PATTERN = /(?:function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)|def\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)|const\s+([a-zA-Z0-9_]+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*=>)/;
 const ROUTE_PATTERN = /\.(?:get|post|put|delete|patch)\s*\(\s*['"]([^'"]+)['"]/;
 
 function cleanValue(val) {
@@ -90,12 +90,13 @@ export function extractEntitiesFromLine(line) {
   // 5. Function declaration
   const funcMatch = trimmed.match(FUNCTION_PATTERN);
   if (funcMatch) {
-    const fnName = funcMatch[1] || funcMatch[2] || funcMatch[3];
+    const fnName = funcMatch[1] || funcMatch[3] || funcMatch[5];
+    const params = funcMatch[2] !== undefined ? funcMatch[2] : (funcMatch[4] !== undefined ? funcMatch[4] : funcMatch[6]);
     if (fnName) {
       entities.push({
         name: fnName,
         type: 'FUNCTION',
-        value: fnName
+        value: params !== undefined ? `${fnName}(${params.trim()})` : fnName
       });
     }
   }

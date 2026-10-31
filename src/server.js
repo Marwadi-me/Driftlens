@@ -30,23 +30,43 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-const exampleCache = new Map();
+const EXAMPLES_INPUTS = {
+  'renamed-flag': { diff: 'examples/renamed-flag/input/patch.diff', doc: 'examples/renamed-flag/input/README.md' },
+  'changed-default': { diff: 'examples/changed-default/input/patch.diff', doc: 'examples/changed-default/input/README.md' },
+  'no-drift': { diff: 'examples/no-drift/input/patch.diff', doc: 'examples/no-drift/input/README.md' },
+  'config-table': { diff: 'examples/config-table/input/patch.diff', doc: 'examples/config-table/input/docs/config.md' },
+  'api-parameter': { diff: 'examples/api-parameter/input/patch.diff', doc: 'examples/api-parameter/input/docs/api.md' },
+  'removed-feature': { diff: 'examples/removed-feature/input/patch.diff', doc: 'examples/removed-feature/input/README.md' }
+};
 
-// Load precomputed golden examples (cached in-memory for instant response)
+// Dynamically analyze golden evaluation examples on demand from raw inputs
 app.get('/api/examples/:id', async (req, res) => {
   const exampleId = req.params.id;
-  if (exampleCache.has(exampleId)) {
-    return res.json(exampleCache.get(exampleId));
+  const config = EXAMPLES_INPUTS[exampleId];
+  if (!config) {
+    return res.status(404).json({ error: `Example '${exampleId}' not found.` });
   }
 
-  const filePath = path.join(projectRoot, 'examples', exampleId, 'output.json');
   try {
-    const data = await fs.readFile(filePath, 'utf8');
-    const parsed = JSON.parse(data);
-    exampleCache.set(exampleId, parsed);
-    res.json(parsed);
-  } catch {
-    res.status(404).json({ error: `Example '${exampleId}' not found.` });
+    const diffText = await fs.readFile(path.join(projectRoot, config.diff), 'utf8');
+    const docText = await fs.readFile(path.join(projectRoot, config.doc), 'utf8');
+
+    const llmClient = createLLMClient();
+    const parsedDiffs = parseDiff(diffText);
+    const changedEntities = extractChangedEntities(parsedDiffs);
+    const docChunks = extractDocumentationChunks(docText, config.doc);
+    const candidates = matchCandidates(changedEntities, docChunks);
+    const findings = await buildDriftFindings(candidates, llmClient, parsedDiffs);
+
+    const report = generateStructuredReport(findings, {
+      filesAnalyzed: parsedDiffs.length,
+      documentsAnalyzed: 1,
+      candidatePairsEvaluated: candidates.length
+    });
+
+    res.json(report);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
