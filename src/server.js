@@ -30,13 +30,21 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Load precomputed golden examples
+const exampleCache = new Map();
+
+// Load precomputed golden examples (cached in-memory for instant response)
 app.get('/api/examples/:id', async (req, res) => {
   const exampleId = req.params.id;
+  if (exampleCache.has(exampleId)) {
+    return res.json(exampleCache.get(exampleId));
+  }
+
   const filePath = path.join(projectRoot, 'examples', exampleId, 'output.json');
   try {
     const data = await fs.readFile(filePath, 'utf8');
-    res.json(JSON.parse(data));
+    const parsed = JSON.parse(data);
+    exampleCache.set(exampleId, parsed);
+    res.json(parsed);
   } catch {
     res.status(404).json({ error: `Example '${exampleId}' not found.` });
   }

@@ -116,3 +116,4 @@ describe('Regression & Bug Fix Tests', () => {
     expect(responseData.updatedDocText).toBe('The timeout is 30s. Remember, the timeout is 60s.');
   });
 });
+

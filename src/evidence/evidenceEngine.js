@@ -79,83 +79,104 @@ export function isDocumentationUpdatedInSamePR(docChunk, entity, docFileDiffs) {
 export async function buildDriftFindings(candidatePairs, llmClient, allParsedDiffs = [], options = {}) {
   const minConfidenceThreshold = options.minConfidence ?? 0.60;
   const docFileDiffs = allParsedDiffs.filter(d => d.type === 'documentation');
+  const concurrency = options.concurrency || 5;
+
+  // Filter out pairs already updated in the same PR
+  const eligiblePairs = candidatePairs.filter(pair => 
+    !isDocumentationUpdatedInSamePR(pair.docChunk, pair.entity, docFileDiffs)
+  );
+
+  const pairFindings = new Array(eligiblePairs.length);
+  let currentIndex = 0;
+
+  // Execute LLM semantic verification concurrently with worker pool
+  const workerCount = Math.min(concurrency, eligiblePairs.length);
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (currentIndex < eligiblePairs.length) {
+      const idx = currentIndex++;
+      const pair = eligiblePairs[idx];
+      const { entity, docChunk, score: candidateScore } = pair;
+
+      // Call LLM for semantic verification
+      const llmResult = await llmClient.verifyDrift(entity, docChunk);
+
+      if (!llmResult || !llmResult.drift) {
+        // False-positive control: LLM determined no drift
+        continue;
+      }
+
+      // Deterministic signal score (1.0 for hard changes like renamed flag or constant value change)
+      let deterministicScore = 0.80;
+      if (entity.type === 'CLI_FLAG' && entity.oldName) deterministicScore = 1.0;
+      if (entity.type === 'CONSTANT' && entity.oldValue && entity.newValue) deterministicScore = 0.95;
+
+      // Calibrated confidence
+      const finalConfidence = calculateConfidence(
+        deterministicScore,
+        candidateScore,
+        llmResult.confidence ?? 0.90
+      );
+
+      if (finalConfidence < minConfidenceThreshold) {
+        continue;
+      }
+
+      const confidenceTier = classifyConfidenceTier(finalConfidence);
+      const severity = (llmResult.severity || 'high').toLowerCase();
+
+      pairFindings[idx] = {
+        severity,
+        confidence: finalConfidence,
+        confidenceTier,
+
+        source: {
+          file: entity.file,
+          lineStart: entity.line,
+          lineEnd: entity.line,
+          entityName: entity.name,
+          entityType: entity.type,
+          oldValue: entity.oldValue,
+          newValue: entity.newValue,
+          before: entity.snippetBefore,
+          after: entity.snippetAfter
+        },
+
+        documentation: {
+          file: docChunk.file,
+          lineStart: docChunk.lineStart,
+          lineEnd: docChunk.lineEnd,
+          section: docChunk.section,
+          text: docChunk.text
+        },
+
+        reason: llmResult.reason,
+        evidence: llmResult.evidence || [
+          {
+            source: `${entity.file}:${entity.line}`,
+            fact: `${entity.name} changed from ${entity.oldValue || 'initial'} to ${entity.newValue || 'updated'}`
+          },
+          {
+            source: `${docChunk.file}:${docChunk.lineStart}`,
+            fact: `Documentation still states: "${docChunk.text}"`
+          }
+        ],
+        suggestion: llmResult.suggestion
+      };
+    }
+  });
+
+  await Promise.all(workers);
+
+  // Maintain deterministic order and assign finding IDs
   const findings = [];
   let findingCounter = 1;
-
-  for (const pair of candidatePairs) {
-    const { entity, docChunk, score: candidateScore } = pair;
-
-    // Check edge case: Documentation updated in the same PR
-    if (isDocumentationUpdatedInSamePR(docChunk, entity, docFileDiffs)) {
-      continue;
+  for (const pf of pairFindings) {
+    if (pf) {
+      findings.push({
+        id: `DRIFT-${String(findingCounter++).padStart(3, '0')}`,
+        ...pf
+      });
     }
-
-    // Call LLM for semantic verification
-    const llmResult = await llmClient.verifyDrift(entity, docChunk);
-
-    if (!llmResult || !llmResult.drift) {
-      // False-positive control: LLM determined no drift
-      continue;
-    }
-
-    // Deterministic signal score (1.0 for hard changes like renamed flag or constant value change)
-    let deterministicScore = 0.80;
-    if (entity.type === 'CLI_FLAG' && entity.oldName) deterministicScore = 1.0;
-    if (entity.type === 'CONSTANT' && entity.oldValue && entity.newValue) deterministicScore = 0.95;
-
-    // Calibrated confidence
-    const finalConfidence = calculateConfidence(
-      deterministicScore,
-      candidateScore,
-      llmResult.confidence ?? 0.90
-    );
-
-    if (finalConfidence < minConfidenceThreshold) {
-      continue;
-    }
-
-    const confidenceTier = classifyConfidenceTier(finalConfidence);
-    const severity = (llmResult.severity || 'high').toLowerCase();
-
-    findings.push({
-      id: `DRIFT-${String(findingCounter++).padStart(3, '0')}`,
-      severity,
-      confidence: finalConfidence,
-      confidenceTier,
-
-      source: {
-        file: entity.file,
-        lineStart: entity.line,
-        lineEnd: entity.line,
-        entityName: entity.name,
-        entityType: entity.type,
-        oldValue: entity.oldValue,
-        newValue: entity.newValue,
-        before: entity.snippetBefore,
-        after: entity.snippetAfter
-      },
-
-      documentation: {
-        file: docChunk.file,
-        lineStart: docChunk.lineStart,
-        lineEnd: docChunk.lineEnd,
-        section: docChunk.section,
-        text: docChunk.text
-      },
-
-      reason: llmResult.reason,
-      evidence: llmResult.evidence || [
-        {
-          source: `${entity.file}:${entity.line}`,
-          fact: `${entity.name} changed from ${entity.oldValue || 'initial'} to ${entity.newValue || 'updated'}`
-        },
-        {
-          source: `${docChunk.file}:${docChunk.lineStart}`,
-          fact: `Documentation still states: "${docChunk.text}"`
-        }
-      ],
-      suggestion: llmResult.suggestion
-    });
   }
 
   // Deduplicate findings for same docChunk and entity

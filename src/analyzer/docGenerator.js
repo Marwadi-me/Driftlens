@@ -119,19 +119,19 @@ export async function generateReadmeForRepo(repoPath = process.cwd()) {
       return;
     }
 
-    for (const entry of entries) {
+    await Promise.all(entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
       const relPath = path.relative(repoPath, fullPath);
 
       if (entry.isDirectory()) {
         if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === 'coverage' || entry.name === 'tests') {
-          continue;
+          return;
         }
         await walk(fullPath);
       } else if (entry.isFile() && /\.(js|ts|py|go|rs)$/.test(entry.name)) {
         try {
           const content = await fs.readFile(fullPath, 'utf8');
-          const lines = content.split('\n');
+          const lines = content.split(/\r?\n/);
           for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             // Filter out comments
@@ -165,7 +165,7 @@ export async function generateReadmeForRepo(repoPath = process.cwd()) {
           // Skip unreadable files
         }
       }
-    }
+    }));
   }
 
   await walk(repoPath);

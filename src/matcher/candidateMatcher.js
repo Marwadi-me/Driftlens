@@ -61,14 +61,16 @@ export function tokenizeIdentifier(identifier) {
  * @returns {{score: number, signals: Array<string>}}
  */
 export function scoreCandidate(entity, docChunk) {
-  const docTextLower = docChunk.text.toLowerCase();
-  const sectionLower = (docChunk.section || '').toLowerCase();
+  const docTextLower = docChunk._textLower || (docChunk._textLower = docChunk.text.toLowerCase());
+  const sectionLower = docChunk._sectionLower || (docChunk._sectionLower = (docChunk.section || '').toLowerCase());
   const signals = [];
   let score = 0;
 
-  const entityNameLower = (entity.name || '').toLowerCase();
-  const oldNameLower = (entity.oldName || '').toLowerCase();
-  const oldValueLower = entity.oldValue ? String(entity.oldValue).toLowerCase().trim() : null;
+  const entityNameLower = entity._nameLower || (entity._nameLower = (entity.name || '').toLowerCase());
+  const oldNameLower = entity._oldNameLower || (entity._oldNameLower = (entity.oldName || '').toLowerCase());
+  const oldValueLower = entity._oldValueLower !== undefined 
+    ? entity._oldValueLower 
+    : (entity._oldValueLower = entity.oldValue ? String(entity.oldValue).toLowerCase().trim() : null);
 
   // Signal A: Exact Identifier or Flag Match
   if (entityNameLower && docTextLower.includes(entityNameLower)) {
@@ -78,16 +80,23 @@ export function scoreCandidate(entity, docChunk) {
     score += 0.45;
     signals.push(`contains old entity identifier '${entity.oldName}'`);
   } else {
-    // Check tokenized concept and stem overlap
-    const tokens = [
-      ...tokenizeIdentifier(entity.name),
-      ...tokenizeIdentifier(entity.oldName)
-    ];
-    const docWords = docTextLower.split(/[\s,.'";:()\-_\/]+/).filter(w => w.length > 1);
-    const docStems = docWords.map(stemWord);
+    // Check tokenized concept and stem overlap (cached)
+    if (!entity._tokens) {
+      entity._tokens = [
+        ...tokenizeIdentifier(entity.name),
+        ...tokenizeIdentifier(entity.oldName)
+      ];
+    }
+    const tokens = entity._tokens;
+
+    if (!docChunk._wordsSet) {
+      const words = docTextLower.split(/[\s,.'";:()\-_\/]+/).filter(w => w.length > 1);
+      docChunk._wordsSet = new Set(words);
+      docChunk._stemsSet = new Set(words.map(stemWord));
+    }
 
     const matchingTokens = tokens.filter(t => 
-      docWords.includes(t) || docStems.includes(t) || docTextLower.includes(t)
+      docChunk._wordsSet.has(t) || docChunk._stemsSet.has(t) || docTextLower.includes(t)
     );
 
     if (matchingTokens.length > 0) {
@@ -97,13 +106,15 @@ export function scoreCandidate(entity, docChunk) {
     }
   }
 
-  // Signal B: Old Value Match (e.g. doc still states "30 seconds" or "/api/v1/export")
+  // Signal B: Old Value Match (pre-compiled RegExp cached on entity)
   if (oldValueLower && oldValueLower.length > 0) {
-    const escaped = oldValueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const startBoundary = /^\w/.test(oldValueLower) ? '\\b' : '(?:^|[^\\w])';
-    const endBoundary = /\w$/.test(oldValueLower) ? '\\b' : '(?:$|[^\\w])';
-    const valueRegex = new RegExp(`${startBoundary}${escaped}${endBoundary}`, 'i');
-    if (valueRegex.test(docTextLower)) {
+    if (entity._valueRegex === undefined) {
+      const escaped = oldValueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const startBoundary = /^\w/.test(oldValueLower) ? '\\b' : '(?:^|[^\\w])';
+      const endBoundary = /\w$/.test(oldValueLower) ? '\\b' : '(?:$|[^\\w])';
+      entity._valueRegex = new RegExp(`${startBoundary}${escaped}${endBoundary}`, 'i');
+    }
+    if (entity._valueRegex && entity._valueRegex.test(docTextLower)) {
       score += 0.30;
       signals.push(`explicitly mentions old value '${entity.oldValue}'`);
     }
