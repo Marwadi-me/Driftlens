@@ -76,3 +76,4 @@ export function parseJSONFromText(rawText) {
     return null;
   }
 }
+

@@ -59,3 +59,4 @@ generate().catch(err => {
   console.error('Failed to generate examples:', err);
   process.exit(1);
 });
+

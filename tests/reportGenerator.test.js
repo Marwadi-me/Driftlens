@@ -82,3 +82,4 @@ describe('generateStructuredReport & formatting', () => {
     expect(md).toContain('The default timeout is 60 seconds.');
   });
 });
+

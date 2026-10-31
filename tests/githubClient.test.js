@@ -45,3 +45,4 @@ describe('GitHubClient', () => {
     expect(content).toContain('Default is 30s.');
   });
 });
+

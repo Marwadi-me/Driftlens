@@ -6,3 +6,4 @@ diff --git a/src/utils.js b/src/utils.js
 -  // calculate sum
 +  // Optimized fast-path calculation
    return a + b;
+

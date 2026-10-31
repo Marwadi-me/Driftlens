@@ -30,3 +30,4 @@ describe('End-to-End Pipeline & CLI', () => {
     expect(Array.isArray(report.findings)).toBe(true);
   });
 });
+

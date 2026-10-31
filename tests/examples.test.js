@@ -27,3 +27,4 @@ describe('Examples Verification', () => {
     expect(data.findings).toHaveLength(0);
   });
 });
+

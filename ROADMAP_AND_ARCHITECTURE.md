@@ -222,3 +222,4 @@ Minimizing false alarms is a primary hackathon evaluation criterion. DriftLens e
 
 4. **Which AI model is used?**  
    *Open-weight **Qwen 2.5 7B Instruct**, compliant with the Hacktoberfest 2026 Hack Day Sonipat open-source AI rules.*
+

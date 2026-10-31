@@ -208,6 +208,7 @@ export function parseDiff(diffText) {
 
 /**
  * Runs `git diff` for a local repository between two commit refs or working tree.
+ * Gracefully handles shallow clones and invalid revision ranges without crashing.
  * @param {string} repoPath 
  * @param {string} base 
  * @param {string} head 
@@ -218,11 +219,21 @@ export async function getLocalGitDiff(repoPath, base = 'HEAD~1', head = 'HEAD') 
     const args = ['diff', '-U3', `${base}...${head}`];
     const { stdout } = await execFileAsync('git', args, { cwd: repoPath, maxBuffer: 10 * 1024 * 1024 });
     return parseDiff(stdout);
-  } catch (error) {
+  } catch {
     // If three-dot diff fails, fallback to two-dot diff
-    const args = ['diff', '-U3', base, head];
-    const { stdout } = await execFileAsync('git', args, { cwd: repoPath, maxBuffer: 10 * 1024 * 1024 });
-    return parseDiff(stdout);
+    try {
+      const args = ['diff', '-U3', base, head];
+      const { stdout } = await execFileAsync('git', args, { cwd: repoPath, maxBuffer: 10 * 1024 * 1024 });
+      return parseDiff(stdout);
+    } catch {
+      // Fallback: try diffing against HEAD or working tree (e.g. shallow clone or initial commit)
+      try {
+        const { stdout } = await execFileAsync('git', ['diff', '-U3', 'HEAD'], { cwd: repoPath, maxBuffer: 10 * 1024 * 1024 });
+        return parseDiff(stdout);
+      } catch {
+        // Return empty diff rather than terminating with an unhandled fatal error
+        return [];
+      }
+    }
   }
 }
-
