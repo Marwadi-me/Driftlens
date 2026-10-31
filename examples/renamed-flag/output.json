@@ -1,0 +1,52 @@
+{
+  "status": "FAIL",
+  "timestamp": "2026-10-31T18:44:17.923Z",
+  "summary": {
+    "status": "FAIL",
+    "filesAnalyzed": 1,
+    "documentsAnalyzed": 1,
+    "candidatePairsEvaluated": 1,
+    "findings": 1,
+    "highSeverity": 1,
+    "mediumSeverity": 0,
+    "lowSeverity": 0
+  },
+  "findings": [
+    {
+      "id": "DRIFT-001",
+      "severity": "high",
+      "confidence": 0.9,
+      "confidenceTier": "HIGH",
+      "source": {
+        "file": "cli.py",
+        "lineStart": 5,
+        "lineEnd": 5,
+        "entityName": "--deadline",
+        "entityType": "CLI_FLAG",
+        "oldValue": "--timeout",
+        "newValue": "--deadline",
+        "before": "parser.add_argument(\"--timeout\", type=int, default=60, help=\"Job deadline in seconds\")",
+        "after": "parser.add_argument(\"--deadline\", type=int, default=60, help=\"Job deadline in seconds\")"
+      },
+      "documentation": {
+        "file": "README.md",
+        "lineStart": 5,
+        "lineEnd": 5,
+        "section": "CLI Options",
+        "text": "Use --timeout to stop slow jobs."
+      },
+      "reason": "The CLI flag '--timeout' was renamed to '--deadline' in cli.py:5, but documentation still references the obsolete flag.",
+      "evidence": [
+        {
+          "source": "cli.py:5",
+          "fact": "Flag renamed from '--timeout' to '--deadline'"
+        },
+        {
+          "source": "README.md:5",
+          "fact": "Documentation states: \"Use --timeout to stop slow jobs.\""
+        }
+      ],
+      "suggestion": "Use --deadline to stop slow jobs."
+    }
+  ]
+}
