@@ -29,6 +29,11 @@ export function extractEntitiesFromLine(line) {
   const entities = [];
   const trimmed = line.trim();
 
+  // Ignore comments (JS/TS //, /*, *, or Python/Shell #)
+  if (/^(?:\/\/|\/\*|\*|#)/.test(trimmed)) {
+    return [];
+  }
+
   // 1. CLI flag
   const cliMatch = trimmed.match(CLI_FLAG_PATTERN);
   if (cliMatch) {

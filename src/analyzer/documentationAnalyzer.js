@@ -10,7 +10,7 @@ import path from 'node:path';
 export function splitIntoSentences(text, startLine) {
   if (!text || !text.trim()) return [];
 
-  const rawLines = text.split('\n');
+  const rawLines = text.split(/\r?\n/);
   const sentences = [];
   let currentSentence = '';
   let sentenceStartLine = startLine;

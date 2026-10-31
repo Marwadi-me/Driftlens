@@ -97,9 +97,12 @@ export function scoreCandidate(entity, docChunk) {
     }
   }
 
-  // Signal B: Old Value Match (e.g. doc still states "30 seconds")
+  // Signal B: Old Value Match (e.g. doc still states "30 seconds" or "/api/v1/export")
   if (oldValueLower && oldValueLower.length > 0) {
-    const valueRegex = new RegExp(`\\b${oldValueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    const escaped = oldValueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const startBoundary = /^\w/.test(oldValueLower) ? '\\b' : '(?:^|[^\\w])';
+    const endBoundary = /\w$/.test(oldValueLower) ? '\\b' : '(?:$|[^\\w])';
+    const valueRegex = new RegExp(`${startBoundary}${escaped}${endBoundary}`, 'i');
     if (valueRegex.test(docTextLower)) {
       score += 0.30;
       signals.push(`explicitly mentions old value '${entity.oldValue}'`);
@@ -114,12 +117,17 @@ export function scoreCandidate(entity, docChunk) {
   }
 
   // Signal D: File Path Relationship
-  const srcBase = path.basename(entity.file, path.extname(entity.file)).toLowerCase();
-  const docBase = path.basename(docChunk.file, path.extname(docChunk.file)).toLowerCase();
-  if (srcBase === docBase && srcBase !== 'index') {
-    score += 0.15;
-    signals.push(`source file '${entity.file}' matches doc file '${docChunk.file}'`);
-  } else if (docChunk.file.toLowerCase().includes('readme')) {
+  if (entity.file && docChunk.file) {
+    const srcBase = path.basename(entity.file, path.extname(entity.file)).toLowerCase();
+    const docBase = path.basename(docChunk.file, path.extname(docChunk.file)).toLowerCase();
+    if (srcBase === docBase && srcBase !== 'index') {
+      score += 0.15;
+      signals.push(`source file '${entity.file}' matches doc file '${docChunk.file}'`);
+    } else if (docChunk.file.toLowerCase().includes('readme')) {
+      score += 0.05;
+      signals.push('located in primary README documentation');
+    }
+  } else if (docChunk.file && docChunk.file.toLowerCase().includes('readme')) {
     score += 0.05;
     signals.push('located in primary README documentation');
   }

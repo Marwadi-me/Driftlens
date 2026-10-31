@@ -97,7 +97,7 @@ GitHub PR / Git Diff
 ## 6. Tech Stack
 - **Runtime**: Node.js (v20+)
 - **Server**: Express
-- **Testing**: Vitest (61 unit & integration tests)
+- **Testing**: Vitest (68 unit & integration tests)
 - **AI / LLM**: Open-weight Qwen 2.5 7B (via OpenAI-compatible endpoint / vLLM / Ollama)
 - **UI Dashboard**: Interactive Web Studio with SVG Visual Impact Graph & 1-Click Remediation
 - **CI / CD**: GitHub Actions CI + Reusable `action.yml`
@@ -202,7 +202,7 @@ Run the test suite with Vitest:
 ```bash
 npm test
 ```
-All 61 unit and integration tests run deterministically in < 600ms using mocked LLM responses.
+All 68 unit, integration, and regression tests run deterministically in < 600ms using mocked LLM responses.
 
 ---
 

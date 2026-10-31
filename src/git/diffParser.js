@@ -93,14 +93,23 @@ export function parseDiff(diffText) {
         files.push(currentFile);
       }
 
-      // Extract file path from diff --git a/path b/path
-      const parts = line.split(' ');
-      const rawPathB = parts[parts.length - 1] || '';
-      const filePath = rawPathB.startsWith('b/') ? rawPathB.slice(2) : rawPathB;
+      // Extract file path from diff --git a/path b/path (handling paths with spaces and quotes)
+      let filePath = '';
+      let oldFilePath = null;
+      const gitMatch = line.match(/^diff --git (?:"?a\/(.+?)"?)\s+(?:"?b\/(.+?)"?)$/);
+      if (gitMatch) {
+        oldFilePath = gitMatch[1];
+        filePath = gitMatch[2];
+      } else {
+        const parts = line.split(' ');
+        const rawPathB = parts[parts.length - 1] || '';
+        filePath = rawPathB.startsWith('b/') ? rawPathB.slice(2) : rawPathB;
+        oldFilePath = parts[parts.length - 2]?.startsWith('a/') ? parts[parts.length - 2].slice(2) : null;
+      }
 
       currentFile = {
         file: filePath,
-        oldFile: parts[parts.length - 2]?.startsWith('a/') ? parts[parts.length - 2].slice(2) : null,
+        oldFile: oldFilePath,
         status: 'modified',
         type: classifyFileType(filePath),
         hunks: [],
@@ -183,6 +192,9 @@ export function parseDiff(diffText) {
       });
       currentFile.deletions++;
       oldLineCounter++;
+    } else if (line.startsWith('\\')) {
+      // Ignore git metadata marker: \ No newline at end of file
+      continue;
     } else if (line.startsWith(' ') || line === '') {
       const content = line.startsWith(' ') ? line.slice(1) : line;
       currentHunk.lines.push({

@@ -55,3 +55,4 @@ describe('README Generator from Code Analysis', () => {
     expect(typeof markdown).toBe('string');
   });
 });
+

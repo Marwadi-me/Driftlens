@@ -77,7 +77,7 @@ app.post('/api/fix/apply', (req, res) => {
     return res.status(400).json({ error: 'docText, targetSentence, and suggestedSentence are required.' });
   }
 
-  const updatedDocText = docText.replace(targetSentence, suggestedSentence);
+  const updatedDocText = docText.replaceAll(targetSentence, suggestedSentence);
   res.json({
     success: true,
     applied: updatedDocText !== docText,

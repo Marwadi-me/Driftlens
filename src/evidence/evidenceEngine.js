@@ -44,16 +44,18 @@ export function isDocumentationUpdatedInSamePR(docChunk, entity, docFileDiffs) {
   for (const hunk of relevantDocDiff.hunks) {
     const isWithinHunkLines = docChunk.lineStart >= hunk.newStart && docChunk.lineStart <= (hunk.newStart + hunk.newLines);
 
-    // If new lines in docs already mention the new value or new flag name
+    // If new lines within this modified hunk already mention the new value or new flag name
     const addedText = hunk.added.join(' ').toLowerCase();
     const newValueStr = entity.newValue ? String(entity.newValue).toLowerCase() : null;
     const newNameStr = entity.name ? entity.name.toLowerCase() : null;
 
-    if (newValueStr && addedText.includes(newValueStr)) {
-      return true;
-    }
-    if (newNameStr && addedText.includes(newNameStr)) {
-      return true;
+    if (isWithinHunkLines) {
+      if (newValueStr && addedText.includes(newValueStr)) {
+        return true;
+      }
+      if (newNameStr && addedText.includes(newNameStr)) {
+        return true;
+      }
     }
 
     // If the old sentence was explicitly removed in this PR
