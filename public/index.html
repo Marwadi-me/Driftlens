@@ -147,6 +147,16 @@
       background: #047857;
     }
 
+    .btn-secondary {
+      background: #334155;
+      color: #38bdf8;
+      border-color: #0284c7;
+    }
+
+    .btn-secondary:hover {
+      background: #1e293b;
+    }
+
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -386,6 +396,7 @@
         <button class="btn" onclick="loadExample('config-table')">📊 4. Config Table Drift</button>
         <button class="btn" onclick="loadExample('api-parameter')">🧩 5. API Parameter Signature</button>
         <button class="btn" onclick="loadExample('removed-feature')">🗑️ 6. Removed Feature</button>
+        <button class="btn btn-secondary" onclick="generateReadme()">✨ Generate README from Code</button>
         <button class="btn btn-primary" onclick="runAnalysis()">🚀 Run DriftLens</button>
       </div>
     </div>
@@ -407,7 +418,7 @@
       <div class="card">
         <div class="card-title">
           <span>Target Documentation (README.md / docs)</span>
-          <span style="font-size: 11px; color: var(--text-muted)">Markdown Prose & Tables</span>
+          <button class="btn" style="padding: 2px 8px; font-size: 11px;" onclick="generateReadme()">✨ Generate from Code</button>
         </div>
         <textarea id="docInput"># Job Worker Service
 
@@ -466,6 +477,21 @@ By default jobs run with standard parameters.</textarea>
       t.innerText = msg;
       t.style.display = 'block';
       setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
+    async function generateReadme() {
+      showToast('Analyzing codebase entities and configurations...');
+      try {
+        const res = await fetch('/api/generate/readme', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+        const data = await res.json();
+        if (data.markdown) {
+          document.getElementById('docInput').value = data.markdown;
+          showToast('✨ Generated starter README.md from codebase analysis!');
+          setTimeout(runAnalysis, 300);
+        }
+      } catch (err) {
+        alert('Error generating README: ' + err.message);
+      }
     }
 
     async function loadExample(name) {

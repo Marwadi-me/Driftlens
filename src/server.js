@@ -10,6 +10,7 @@ import { matchCandidates } from './matcher/candidateMatcher.js';
 import { createLLMClient } from './ai/llmClient.js';
 import { buildDriftFindings } from './evidence/evidenceEngine.js';
 import { generateStructuredReport } from './report/reportGenerator.js';
+import { generateReadmeForRepo } from './analyzer/docGenerator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -101,6 +102,20 @@ app.post('/api/fix/patch', (req, res) => {
   res.setHeader('Content-Type', 'text/x-diff');
   res.setHeader('Content-Disposition', `attachment; filename="${path.basename(fileName)}.patch"`);
   res.send(patch);
+});
+
+// Generate starter README from codebase analysis
+app.post('/api/generate/readme', async (req, res) => {
+  try {
+    const { repoPath = projectRoot } = req.body;
+    const generatedMarkdown = await generateReadmeForRepo(repoPath);
+    res.json({
+      success: true,
+      markdown: generatedMarkdown
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Analyze local git repository
