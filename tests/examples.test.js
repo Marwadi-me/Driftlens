@@ -26,5 +26,13 @@ describe('Examples Verification', () => {
     expect(data.status).toBe('PASS');
     expect(data.findings).toHaveLength(0);
   });
-});
 
+  it('verifies config-table output exists and detected table row drift', async () => {
+    const raw = await fs.readFile('examples/config-table/output.json', 'utf8');
+    const data = JSON.parse(raw);
+    expect(data.status).toBe('FAIL');
+    expect(data.findings).toHaveLength(1);
+    expect(data.findings[0].source.entityName).toBe('TIMEOUT_SECONDS');
+    expect(data.findings[0].suggestion).toContain('60');
+  });
+});

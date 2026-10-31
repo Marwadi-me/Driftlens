@@ -6,30 +6,34 @@
   <title>DriftLens — Catch the documentation a code change just made wrong</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --text-muted: #8b949e;
-      --accent: #58a6ff;
-      --danger: #f85149;
-      --warning: #d29922;
-      --success: #3fb950;
-      --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --bg: #090d16;
+      --card-bg: #121826;
+      --card-border: #1f293d;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --danger: #f43f5e;
+      --danger-glow: rgba(244, 63, 94, 0.15);
+      --warning: #f59e0b;
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: var(--bg);
+      background: radial-gradient(circle at top right, #111a33, var(--bg) 60%);
       color: var(--text);
       font-family: var(--font-sans);
       line-height: 1.5;
       padding: 24px;
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
     }
 
@@ -37,13 +41,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .brand h1 {
-      font-size: 26px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -53,50 +61,90 @@
     .brand p {
       color: var(--text-muted);
       font-size: 14px;
+      margin-top: 2px;
     }
 
-    .model-badge {
-      background: #21262d;
-      border: 1px solid var(--border);
+    .badge-pill {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--card-border);
       padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
+      border-radius: 999px;
+      font-size: 12px;
       color: var(--accent);
       font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
     }
 
     .demo-bar {
+      margin-bottom: 20px;
+    }
+
+    .demo-bar h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .demo-buttons {
       display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .btn {
-      background: #21262d;
+      background: #1e293b;
       color: var(--text);
-      border: 1px solid var(--border);
-      padding: 10px 16px;
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn:hover {
-      background: #30363d;
-      border-color: #8b949e;
+      background: #334155;
+      border-color: #475569;
+      transform: translateY(-1px);
     }
 
     .btn-primary {
-      background: #238636;
+      background: #0284c7;
       color: #fff;
-      border-color: rgba(240, 246, 252, 0.1);
+      border-color: #38bdf8;
+      font-weight: 600;
+      box-shadow: 0 0 15px var(--accent-glow);
     }
 
     .btn-primary:hover {
-      background: #2ea043;
+      background: #0369a1;
+    }
+
+    .btn-success {
+      background: #059669;
+      color: #fff;
+      border-color: #10b981;
+    }
+
+    .btn-success:hover {
+      background: #047857;
     }
 
     .grid-2 {
@@ -108,36 +156,40 @@
 
     .card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
       padding: 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
     .card-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       margin-bottom: 12px;
       color: #fff;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     textarea {
       width: 100%;
-      height: 180px;
-      background: #0d1117;
-      color: var(--text);
-      border: 1px solid var(--border);
+      height: 170px;
+      background: #090d16;
+      color: #f1f5f9;
+      border: 1px solid var(--card-border);
       border-radius: 6px;
       padding: 12px;
       font-family: var(--font-mono);
       font-size: 13px;
       resize: vertical;
+      line-height: 1.4;
     }
 
     textarea:focus {
       outline: none;
       border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
     .summary-cards {
@@ -149,36 +201,56 @@
 
     .stat-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 16px;
       text-align: center;
     }
 
     .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 6px;
     }
 
     .stat-value {
-      font-size: 24px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
       color: #fff;
     }
 
-    .status-FAIL { color: var(--danger); }
+    .status-FAIL { color: var(--danger); text-shadow: 0 0 12px var(--danger-glow); }
     .status-WARN { color: var(--warning); }
-    .status-PASS { color: var(--success); }
+    .status-PASS { color: var(--success); text-shadow: 0 0 12px var(--success-glow); }
+
+    /* Impact Graph Canvas */
+    .graph-card {
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .graph-container {
+      width: 100%;
+      height: 240px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .finding-card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
       border-left: 4px solid var(--danger);
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
     .finding-header {
@@ -186,40 +258,47 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .finding-id {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .badge {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
+      text-transform: uppercase;
     }
 
-    .badge-high { background: rgba(248, 81, 73, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-    .badge-medium { background: rgba(210, 153, 34, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-    .badge-pass { background: rgba(63, 185, 80, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .badge-high { background: var(--danger-glow); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-pass { background: var(--success-glow); color: var(--success); border: 1px solid var(--success); }
 
     .provenance-flow {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       gap: 16px;
       align-items: center;
-      background: #0d1117;
+      background: #090d16;
       padding: 16px;
       border-radius: 6px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
       margin-bottom: 16px;
     }
 
     .prov-box h4 {
-      font-size: 13px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
       margin-bottom: 8px;
     }
@@ -227,34 +306,64 @@
     .prov-content {
       font-family: var(--font-mono);
       font-size: 13px;
-      background: #161b22;
+      background: #121826;
       padding: 10px;
       border-radius: 4px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
     }
 
     .arrow-icon {
-      font-size: 24px;
+      font-size: 18px;
       color: var(--danger);
+      font-weight: 700;
+      text-align: center;
     }
 
-    .diff-del { color: #ffa198; background: rgba(248, 81, 73, 0.15); padding: 2px 4px; border-radius: 3px; }
-    .diff-add { color: #7ee787; background: rgba(63, 185, 80, 0.15); padding: 2px 4px; border-radius: 3px; }
+    .diff-del { color: #fca5a5; background: rgba(239, 68, 68, 0.15); padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+    .diff-add { color: #86efac; background: rgba(34, 197, 94, 0.15); padding: 2px 6px; border-radius: 3px; font-weight: 500; }
 
     .suggestion-box {
-      background: rgba(88, 166, 255, 0.08);
-      border: 1px solid rgba(88, 166, 255, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 6px;
-      padding: 12px;
-      margin-top: 12px;
+      padding: 14px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .suggestion-box strong { color: var(--accent); }
+    .suggestion-text {
+      font-family: var(--font-mono);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 8px;
+    }
 
     .empty-state {
       text-align: center;
-      padding: 40px;
+      padding: 48px;
       color: var(--text-muted);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: none;
+      font-weight: 600;
+      z-index: 1000;
     }
   </style>
 </head>
@@ -265,21 +374,27 @@
         <h1>🔍 DriftLens</h1>
         <p>"Catch the documentation a code change just made wrong."</p>
       </div>
-      <div class="model-badge">AI Engine: Qwen 2.5 7B (Open-Weight)</div>
+      <div class="badge-pill">AI Engine: Qwen 2.5 7B (Open-Weight)</div>
     </header>
 
     <div class="demo-bar">
-      <button class="btn" onclick="loadExample('renamed-flag')">⚡ Demo 1: Renamed CLI Flag</button>
-      <button class="btn" onclick="loadExample('changed-default')">⚡ Demo 2: Changed Default</button>
-      <button class="btn" onclick="loadExample('no-drift')">🛡️ Demo 3: Refactor (No Drift)</button>
-      <button class="btn btn-primary" onclick="runAnalysis()">🚀 Run DriftLens Analysis</button>
+      <h3>Select a Real-World Scenario:</h3>
+      <div class="demo-buttons">
+        <button class="btn" onclick="loadExample('renamed-flag')">⚡ 1. Renamed CLI Flag</button>
+        <button class="btn" onclick="loadExample('changed-default')">⚡ 2. Changed Default</button>
+        <button class="btn" onclick="loadExample('no-drift')">🛡️ 3. Refactor (No Drift)</button>
+        <button class="btn" onclick="loadExample('config-table')">📊 4. Config Table Drift</button>
+        <button class="btn" onclick="loadExample('api-parameter')">🧩 5. API Parameter Signature</button>
+        <button class="btn" onclick="loadExample('removed-feature')">🗑️ 6. Removed Feature</button>
+        <button class="btn btn-primary" onclick="runAnalysis()">🚀 Run DriftLens</button>
+      </div>
     </div>
 
     <div class="grid-2">
       <div class="card">
         <div class="card-title">
-          <span>Git Diff (Code Changes)</span>
-          <span style="font-size: 12px; color: var(--text-muted)">cli.py / src/config.js</span>
+          <span>Git Diff (Code Changes Introduced in PR)</span>
+          <span style="font-size: 11px; color: var(--text-muted)">Unified Patch Format</span>
         </div>
         <textarea id="diffInput">diff --git a/cli.py b/cli.py
 --- a/cli.py
@@ -291,8 +406,8 @@
 
       <div class="card">
         <div class="card-title">
-          <span>Documentation (README.md)</span>
-          <span style="font-size: 12px; color: var(--text-muted)">Markdown Prose & Tables</span>
+          <span>Target Documentation (README.md / docs)</span>
+          <span style="font-size: 11px; color: var(--text-muted)">Markdown Prose & Tables</span>
         </div>
         <textarea id="docInput"># Job Worker Service
 
@@ -303,10 +418,20 @@ By default jobs run with standard parameters.</textarea>
       </div>
     </div>
 
+    <div class="card graph-card">
+      <div class="card-title">
+        <span>🌐 Documentation Blast Radius & Impact Graph</span>
+        <span style="font-size: 11px; color: var(--accent)" id="graphLabel">Interactive Impact Visualization</span>
+      </div>
+      <div class="graph-container" id="impactGraph">
+        <!-- SVG Interactive Graph -->
+      </div>
+    </div>
+
     <div id="resultsArea">
       <div class="summary-cards">
         <div class="stat-card">
-          <div class="stat-label">Status</div>
+          <div class="stat-label">Analysis Result</div>
           <div class="stat-value" id="statStatus">READY</div>
         </div>
         <div class="stat-card">
@@ -325,13 +450,24 @@ By default jobs run with standard parameters.</textarea>
 
       <div id="findingsContainer">
         <div class="card empty-state">
-          Click <b>Run DriftLens Analysis</b> or select one of the Quick Demos above to evaluate documentation drift.
+          Select one of the 6 scenarios above or click <b>Run DriftLens</b> to evaluate documentation consistency.
         </div>
       </div>
     </div>
   </div>
 
+  <div class="toast" id="toast">Fix applied successfully!</div>
+
   <script>
+    let currentFindings = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
     async function loadExample(name) {
       if (name === 'renamed-flag') {
         document.getElementById('diffInput').value = `diff --git a/cli.py b/cli.py\n--- a/cli.py\n+++ b/cli.py\n@@ -5,3 +5,3 @@\n-    parser.add_argument("--timeout", type=int, default=60, help="Job deadline in seconds")\n+    parser.add_argument("--deadline", type=int, default=60, help="Job deadline in seconds")`;
@@ -342,6 +478,15 @@ By default jobs run with standard parameters.</textarea>
       } else if (name === 'no-drift') {
         document.getElementById('diffInput').value = `diff --git a/src/utils.js b/src/utils.js\n--- a/src/utils.js\n+++ b/src/utils.js\n@@ -1,3 +1,3 @@\n export function calculateSum(a, b) {\n-  // calculate sum\n+  // Optimized fast-path calculation\n   return a + b;`;
         document.getElementById('docInput').value = `# Calculator Utilities\n\n## Usage\n\nThis package provides mathematical utilities for fast calculation.`;
+      } else if (name === 'config-table') {
+        document.getElementById('diffInput').value = `diff --git a/src/config.js b/src/config.js\n--- a/src/config.js\n+++ b/src/config.js\n@@ -1,2 +1,2 @@\n-export const TIMEOUT_SECONDS = 30;\n+export const TIMEOUT_SECONDS = 60;`;
+        document.getElementById('docInput').value = `# Server Configuration\n\n| Setting | Default | Description |\n| :--- | :--- | :--- |\n| TIMEOUT_SECONDS | 30 | Socket timeout in seconds |\n| RETRY_LIMIT | 3 | Maximum retries |`;
+      } else if (name === 'api-parameter') {
+        document.getElementById('diffInput').value = `diff --git a/src/api.js b/src/api.js\n--- a/src/api.js\n+++ b/src/api.js\n@@ -1,2 +1,2 @@\n-export function registerUser(email, password) {\n+export function registerUser(email, password, tenantId) {`;
+        document.getElementById('docInput').value = `# User Registration API\n\nTo register an account, call registerUser(email, password) with standard credentials.`;
+      } else if (name === 'removed-feature') {
+        document.getElementById('diffInput').value = `diff --git a/src/routes.js b/src/routes.js\n--- a/src/routes.js\n+++ b/src/routes.js\n@@ -1,3 +1,2 @@\n export function setupRoutes(app) {\n-  app.get('/api/v1/legacy-export', legacyExportHandler);\n   app.get('/api/v2/export', exportV2Handler);`;
+        document.getElementById('docInput').value = `# Data Export API\n\nUse the /api/v1/legacy-export route for downloading reports in CSV format.`;
       }
 
       runAnalysis();
@@ -361,10 +506,89 @@ By default jobs run with standard parameters.</textarea>
           body: JSON.stringify({ diffText, docText, docFile: 'README.md' })
         });
         const report = await res.json();
+        currentFindings = report.findings || [];
         renderReport(report);
+        renderImpactGraph(report);
       } catch (err) {
         alert('Analysis error: ' + err.message);
       }
+    }
+
+    async function applyFix(targetSentence, suggestedSentence) {
+      const docText = document.getElementById('docInput').value;
+      try {
+        const res = await fetch('/api/fix/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ docText, targetSentence, suggestedSentence })
+        });
+        const data = await res.json();
+        if (data.applied) {
+          document.getElementById('docInput').value = data.updatedDocText;
+          showToast('⚡ Applied fix directly to documentation!');
+          // Re-run to verify drift is cleared
+          setTimeout(runAnalysis, 300);
+        } else {
+          showToast('Could not find target sentence to replace.');
+        }
+      } catch (err) {
+        alert('Error applying fix: ' + err.message);
+      }
+    }
+
+    function renderImpactGraph(report) {
+      const container = document.getElementById('impactGraph');
+      if (!report.findings || report.findings.length === 0) {
+        container.innerHTML = `
+          <svg width="100%" height="100%" viewBox="0 0 800 200">
+            <line x1="200" y1="100" x2="600" y2="100" stroke="#10b981" stroke-width="2" stroke-dasharray="4"/>
+            <circle cx="200" cy="100" r="30" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+            <text x="200" y="105" fill="#fff" font-size="12" text-anchor="middle" font-family="sans-serif">Source Code</text>
+            <circle cx="600" cy="100" r="30" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+            <text x="600" y="105" fill="#fff" font-size="12" text-anchor="middle" font-family="sans-serif">Documentation</text>
+            <text x="400" y="90" fill="#10b981" font-size="12" text-anchor="middle" font-weight="bold" font-family="sans-serif">✅ Consistent (No Drift)</text>
+          </svg>
+        `;
+        return;
+      }
+
+      const f = report.findings[0];
+      const entityName = f.source.entityName || 'Code Entity';
+      const docFile = f.documentation.file || 'README.md';
+
+      container.innerHTML = `
+        <svg width="100%" height="100%" viewBox="0 0 800 220">
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          
+          <!-- Connecting Line -->
+          <line x1="180" y1="110" x2="400" y2="110" stroke="#38bdf8" stroke-width="3"/>
+          <line x1="400" y1="110" x2="620" y2="110" stroke="#f43f5e" stroke-width="3" stroke-dasharray="6"/>
+          
+          <!-- Source Node -->
+          <circle cx="180" cy="110" r="38" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" filter="url(#glow)"/>
+          <text x="180" y="105" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle" font-family="sans-serif">SOURCE</text>
+          <text x="180" y="122" fill="#fff" font-size="11" text-anchor="middle" font-family="monospace">${f.source.file}</text>
+
+          <!-- Entity Node -->
+          <circle cx="400" cy="110" r="45" fill="#0f172a" stroke="#f59e0b" stroke-width="3"/>
+          <text x="400" y="105" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle" font-family="sans-serif">MUTATED ENTITY</text>
+          <text x="400" y="123" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle" font-family="monospace">${entityName}</text>
+
+          <!-- Documentation Node -->
+          <circle cx="620" cy="110" r="38" fill="#1e293b" stroke="#f43f5e" stroke-width="2.5" filter="url(#glow)"/>
+          <text x="620" y="105" fill="#f43f5e" font-size="11" font-weight="bold" text-anchor="middle" font-family="sans-serif">STALE DOC</text>
+          <text x="620" y="122" fill="#fff" font-size="11" text-anchor="middle" font-family="monospace">${docFile}</text>
+
+          <!-- Blast Radius Indicator -->
+          <rect x="480" y="80" width="70" height="20" rx="10" fill="#f43f5e"/>
+          <text x="515" y="94" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle" font-family="sans-serif">⚠️ DRIFT</text>
+        </svg>
+      `;
     }
 
     function renderReport(report) {
@@ -382,8 +606,8 @@ By default jobs run with standard parameters.</textarea>
       if (report.findings.length === 0) {
         container.innerHTML = `
           <div class="card empty-state" style="border-left: 4px solid var(--success);">
-            <h3 style="color: var(--success); margin-bottom: 8px;">✅ No Documentation Drift Detected</h3>
-            <p>Code changes were analyzed against documentation. Implementation modifications do not contradict published documentation.</p>
+            <h3 style="color: var(--success); margin-bottom: 8px;">✅ Documentation is 100% In Sync</h3>
+            <p>Code changes were analyzed against published documentation. All descriptions and public interfaces remain accurate.</p>
           </div>
         `;
         return;
@@ -394,25 +618,28 @@ By default jobs run with standard parameters.</textarea>
         const card = document.createElement('div');
         card.className = 'finding-card';
 
+        const safeDocText = f.documentation.text.replace(/"/g, '&quot;');
+        const safeSuggestion = f.suggestion.replace(/"/g, '&quot;');
+
         card.innerHTML = `
           <div class="finding-header">
             <div>
-              <span class="finding-id">${f.id}</span>
+              <span class="finding-id">⚠️ ${f.id}</span>
               <span class="badge badge-high">${f.severity.toUpperCase()} SEVERITY</span>
             </div>
-            <span class="badge" style="background:#21262d; border:1px solid var(--border); color:var(--accent);">
+            <span class="badge" style="background:#1e293b; border:1px solid var(--card-border); color:var(--accent);">
               Calibrated Confidence: ${confPercent}%
             </span>
           </div>
 
           <div class="provenance-flow">
             <div class="prov-box">
-              <h4>📖 AFFECTED DOCUMENTATION (${f.documentation.file}:${f.documentation.lineStart})</h4>
+              <h4>📖 Outdated Documentation (${f.documentation.file}:${f.documentation.lineStart})</h4>
               <div class="prov-content">"${f.documentation.text}"</div>
             </div>
             <div class="arrow-icon">⟵ Contradicted By ⟶</div>
             <div class="prov-box">
-              <h4>💻 RESPONSIBLE CODE CHANGE (${f.source.file}:${f.source.lineStart})</h4>
+              <h4>💻 Responsible Code Change (${f.source.file}:${f.source.lineStart})</h4>
               <div class="prov-content">
                 <div><span class="diff-del">- ${f.source.before || ''}</span></div>
                 <div style="margin-top:4px;"><span class="diff-add">+ ${f.source.after || ''}</span></div>
@@ -423,9 +650,12 @@ By default jobs run with standard parameters.</textarea>
           <p style="margin-bottom: 8px;"><strong>Reason:</strong> ${f.reason}</p>
 
           <div class="suggestion-box">
-            <strong>Suggested Correction:</strong>
-            <div style="font-family: var(--font-mono); margin-top: 4px; color: #fff;">
-              "${f.suggestion}"
+            <div>
+              <strong style="color: var(--accent);">Suggested Correction:</strong>
+              <div class="suggestion-text" style="margin-top: 4px;">"${f.suggestion}"</div>
+            </div>
+            <div class="actions-bar">
+              <button class="btn btn-success" onclick="applyFix('${safeDocText}', '${safeSuggestion}')">⚡ Apply Fix</button>
             </div>
           </div>
         `;
@@ -433,7 +663,9 @@ By default jobs run with standard parameters.</textarea>
         container.appendChild(card);
       }
     }
+
+    // Run initial analysis
+    runAnalysis();
   </script>
 </body>
 </html>
-

@@ -36,4 +36,27 @@ describe('Express Server API', () => {
     expect(responseData.status).toBe('FAIL');
     expect(responseData.findings[0].source.entityName).toBe('--deadline');
   });
+
+  it('POST /api/fix/apply replaces target sentence with suggested correction', async () => {
+    let responseData = null;
+    const req = {
+      body: {
+        docText: 'The default timeout is 30 seconds.',
+        targetSentence: 'The default timeout is 30 seconds.',
+        suggestedSentence: 'The default timeout is 60 seconds.'
+      }
+    };
+    const res = {
+      json: (data) => { responseData = data; },
+      status: () => res
+    };
+
+    const fixRoute = app._router.stack.find(s => s.route && s.route.path === '/api/fix/apply');
+    expect(fixRoute).toBeDefined();
+
+    await fixRoute.route.stack[0].handle(req, res, () => {});
+    expect(responseData.success).toBe(true);
+    expect(responseData.applied).toBe(true);
+    expect(responseData.updatedDocText).toBe('The default timeout is 60 seconds.');
+  });
 });

@@ -2,6 +2,7 @@
 
 > **Tagline:** *"Catch the documentation a code change just made wrong."*  
 > **Problem:** Problem 5 — Automated Documentation Drift Detection  
+> **Category:** Developer Experience | Documentation Engineering | Static Analysis  
 > **Open-Weight AI Model:** Qwen 2.5 7B  
 > **Author / Team:** Yashvardhan Mundhra (`loneCommiter`)  
 > **Coding Agent:** Antigravity  
@@ -21,7 +22,19 @@ DriftLens is an intelligent documentation-review system designed for GitHub Pull
 
 ---
 
-## 2. Component Breakdown: "Which Part Works for Which Thing"
+## 2. Research Starting Points & Existing Tools Comparison
+
+| Tool / Research Project | Target Scope | Mechanism | Limitation Addressed by DriftLens |
+| :--- | :--- | :--- | :--- |
+| **Python `doctest`** | Code block verification | Executes Python code blocks inside docstrings and asserts stdout. | Cannot evaluate prose explanations, configuration tables, markdown tutorials, or CLI flags described in text. |
+| **`rustdoc` tests** | Rust example testing | Compiles and runs ````rust code blocks in documentation. | Limited strictly to executable Rust code. Cannot detect if prose statements contradict configuration. |
+| **`mktestdocs`** | Markdown code runner | Runs pytest against markdown code fences. | Only tests executable code snippets; blind to outdated prose defaults or renamed parameters. |
+| **`Doc Detective`** | UI & API doc testing | Tests executable actions against live apps. | Requires complex environment setup; cannot reason about semantic contradiction in PR diffs. |
+| **DriftLens (Ours)** | **Prose & Semantic Drift Detection** | Hybrid: Deterministic AST entity extraction + sentence-level chunking + open-weight LLM reasoning. | **Detects factual contradictions in prose, tables, and instructions before code is merged.** |
+
+---
+
+## 3. Component Breakdown: "Which Part Works for Which Thing"
 
 Below is a detailed guide to every subsystem and module in the DriftLens codebase:
 
@@ -70,7 +83,7 @@ driftlens/
 
 | File / Component | Responsibility & How It Works |
 | :--- | :--- |
-| **`src/git/diffParser.js`** | **Diff Parser & File Classifier:** Parses unified diffs (`git diff` and GitHub PR patches) into structured file objects with line-by-line hunks, exact line offsets, additions, deletions, and classifies files into `source`, `documentation`, `tests`, `configuration`, or `binary`. |
+| **`src/git/diffParser.js`** | **Diff Parser & File Classifier:** Parses unified diffs (`git diff` and GitHub PR patches) into structured file objects with line-by-line hunks, exact line offsets, additions, deletions, and classifies files into `source`, `documentation`, `tests`, `configuration`, or `binary`. Gracefully handles shallow clones. |
 | **`src/analyzer/documentationAnalyzer.js`** | **Documentation Extractor:** Parses Markdown (`README.md`, `docs/**/*.md`), extracting prose sentences with precise line numbers (`lineStart`, `lineEnd`), section heading hierarchy, structured Markdown tables (headers, cells, row context), and code blocks. |
 | **`src/analyzer/entityExtractor.js`** | **Code Entity Extractor:** Inspects changed source code to identify variables, constants (`DEFAULT_TIMEOUT`), CLI flags (`add_argument("--timeout")`), functions, defaults, and maps old values vs new values across diff hunks. |
 | **`src/matcher/candidateMatcher.js`** | **Candidate Matcher:** Prevents sending entire repos to the LLM. Applies multi-signal relevance scoring (Exact Identifier, Old Value Occurrence, Section Context, File Path Stem, Subtoken Lemmatization) to filter and rank candidate doc chunks. |
@@ -86,7 +99,28 @@ driftlens/
 
 ---
 
-## 3. End-to-End Architectural Pipeline
+## 4. Addressing the 5 Key Technical Considerations
+
+### 1. Connecting Documentation Sentences to Source Code
+DriftLens decomposes documentation down to sentence-level chunks with line numbers, file paths, and section headings. It pairs them with changed code entities using multi-signal scoring (tokenized identifiers, value matches, section semantics, file stem alignment).
+
+### 2. Identifying Indirect Relationships
+DriftLens breaks identifiers into subwords (e.g. `DEFAULT_TIMEOUT` -> `time`, `out`) and applies stemming (`timing out` -> `time`). The LLM then reasons about conceptual equivalence (e.g. "waits for 30 seconds" contradicting `DEFAULT_TIMEOUT = 60`).
+
+### 3. Minimizing False Alarms
+- Deterministic diff analysis ignores non-functional edits (whitespace, formatting, private internal variable renaming).
+- The candidate matcher filters out >95% of unrelated documentation.
+- The composite confidence formula requires strong agreement between deterministic evidence and LLM reasoning.
+
+### 4. Distinguishing Maintenance Changes from Breaking Drift
+When a PR updates both code and documentation (`isDocumentationUpdatedInSamePR`), DriftLens inspects the documentation hunk additions. If the new value or flag is already documented in the PR, DriftLens recognizes the proactive update and **suppresses the drift warning**.
+
+### 5. Remaining Useful Without Generating Spam
+DriftLens ranks findings by severity (`HIGH`, `MEDIUM`, `LOW`) and suppresses any finding below `0.60` confidence. It generates structured JSON, concise terminal summaries, or focused GitHub Suggestions.
+
+---
+
+## 5. End-to-End Architectural Pipeline
 
 ```text
                ┌──────────────────────────────────────────────┐
@@ -147,42 +181,17 @@ driftlens/
 
 ---
 
-## 4. False-Positive Control Strategy
+## 6. Evaluation Scenarios Walkthrough (Pre-Correction Detection)
 
-Minimizing false alarms is a primary hackathon evaluation criterion. DriftLens enforces three layers of false-positive protection:
+Organizers evaluate tools on real project histories containing code changes followed shortly afterward by corrective documentation commits.
 
-1. **Deterministic Filtering Before AI:**
-   - Code changes that do not alter public entities (e.g., whitespace changes, internal comments, non-interface variable renames) do not produce candidate pairs.
-   - Sentences without conceptual or identifier overlap are excluded from LLM reasoning.
-2. **Same-PR Documentation Update Detection (`isDocumentationUpdatedInSamePR`):**
-   - If a developer changes `DEFAULT_TIMEOUT = 60` and *simultaneously updates `README.md` in the same PR* to say `60 seconds`, DriftLens inspects the PR doc hunks and **suppresses the drift finding**.
-3. **Calibrated Composite Confidence Formula:**
-   $$\text{Confidence} = 0.35 \times \text{DeterministicScore} + 0.25 \times \text{CandidateScore} + 0.40 \times \text{LLMConfidence}$$
-   - Only findings exceeding the configured threshold (default `0.60`) are reported.
-   - Non-breaking refactoring scenarios (like `examples/no-drift/`) evaluate to `PASS` with zero findings.
+**Evaluation Execution:**
+```bash
+# Analyze PR/commit where code changed before documentation was updated
+driftlens analyze --repo <repo-path> --base <before-code-change> --head <code-change-commit>
+```
 
----
-
-## 5. Hackathon Execution Roadmap (12-Hour Chronology)
-
-| Phase | Milestone | Status | Deliverables |
-| :---: | :--- | :---: | :--- |
-| **Phase 0** | **Hackathon Compliance & Git Init** | ✅ Complete | Created `HACKATHON.md` as strictly the sole root commit on `main`. |
-| **Phase 1** | **Project Foundation & PR Setup** | ✅ Complete | Node 20+, Express, Vitest, `.github/workflows/ci.yml`, PR template, MIT License, README. |
-| **Phase 2** | **Git Diff Parser** | ✅ Complete | Unified diff parser, file classifier, hunk line tracking. |
-| **Phase 3** | **Documentation Extractor** | ✅ Complete | Markdown prose sentence splitting, table row extraction, section tracking. |
-| **Phase 4** | **Code Entity Extraction** | ✅ Complete | Extraction of constants, CLI flags (`--timeout`), defaults, functions, before/after values. |
-| **Phase 5** | **Candidate Matcher** | ✅ Complete | Multi-signal relevance scoring (identifiers, values, sections, stems). |
-| **Phase 6** | **Open-Weight LLM Integration** | ✅ Complete | Qwen 2.5 7B integration, system prompt, JSON schemas, mock test runner. |
-| **Phase 7** | **Evidence Engine & Calibration** | ✅ Complete | Calibrated confidence, severity rating, same-PR update detection. |
-| **Phase 8** | **GitHub PR Integration** | ✅ Complete | GitHub REST API client for remote PR diff and file analysis. |
-| **Phase 9** | **CLI & Report Generator** | ✅ Complete | Terminal reports, JSON output, GitHub review comments, `./bin/driftlens.js`. |
-| **Phase 10** | **Golden Examples & Tests** | ✅ Complete | Real generated outputs in `examples/` (`renamed-flag`, `changed-default`, `no-drift`), 52 automated tests. |
-| **Phase 11** | **Web UI & Dashboard** | ✅ Complete | Express API server and interactive visual dashboard (`public/index.html`). |
-
----
-
-## 6. Golden Demonstrations for Judges
+**Golden Demonstration Cases:**
 
 ### Demo 1: Renamed CLI Flag (Breaking Drift)
 - **Code Change:** `parser.add_argument("--timeout")` → `parser.add_argument("--deadline")` in `cli.py:5`
@@ -201,11 +210,11 @@ Minimizing false alarms is a primary hackathon evaluation criterion. DriftLens e
   - Suggested Fix: `"The default timeout is 60 seconds."`
 
 ### Demo 3: Internal Refactor (False-Positive Control)
-- **Code Change:** Internal comment / performance refactor in `src/utils.js`
+- **Code Change:** Internal calculation refactor in `src/utils.js`
 - **Doc Statement:** `"This package provides mathematical utilities for fast calculation."`
 - **DriftLens Output:**
   - Status: `PASS` (0 findings)
-  - Proof that DriftLens does not create false alarms on code changes that leave documentation valid.
+  - Proves that DriftLens does not create false alarms on code changes that leave documentation valid.
 
 ---
 
@@ -222,4 +231,3 @@ Minimizing false alarms is a primary hackathon evaluation criterion. DriftLens e
 
 4. **Which AI model is used?**  
    *Open-weight **Qwen 2.5 7B Instruct**, compliant with the Hacktoberfest 2026 Hack Day Sonipat open-source AI rules.*
-

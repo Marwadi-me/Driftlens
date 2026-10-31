@@ -26,6 +26,24 @@ const EXAMPLES = [
     diffFile: 'examples/no-drift/input/patch.diff',
     docFile: 'examples/no-drift/input/README.md',
     outputFile: 'examples/no-drift/output.json'
+  },
+  {
+    name: 'config-table',
+    diffFile: 'examples/config-table/input/patch.diff',
+    docFile: 'examples/config-table/input/docs/config.md',
+    outputFile: 'examples/config-table/output.json'
+  },
+  {
+    name: 'api-parameter',
+    diffFile: 'examples/api-parameter/input/patch.diff',
+    docFile: 'examples/api-parameter/input/docs/api.md',
+    outputFile: 'examples/api-parameter/output.json'
+  },
+  {
+    name: 'removed-feature',
+    diffFile: 'examples/removed-feature/input/patch.diff',
+    docFile: 'examples/removed-feature/input/README.md',
+    outputFile: 'examples/removed-feature/output.json'
   }
 ];
 
@@ -39,7 +57,7 @@ async function generate() {
 
     const parsedDiffs = parseDiff(diffText);
     const changedEntities = extractChangedEntities(parsedDiffs);
-    const docChunks = extractDocumentationChunks(docText, 'README.md');
+    const docChunks = extractDocumentationChunks(docText, ex.docFile);
 
     const candidates = matchCandidates(changedEntities, docChunks);
     const findings = await buildDriftFindings(candidates, llmClient, parsedDiffs);
@@ -59,4 +77,3 @@ generate().catch(err => {
   console.error('Failed to generate examples:', err);
   process.exit(1);
 });
-

@@ -1,6 +1,6 @@
 {
   "status": "FAIL",
-  "timestamp": "2026-10-31T18:44:17.924Z",
+  "timestamp": "2026-10-31T20:06:46.611Z",
   "summary": {
     "status": "FAIL",
     "filesAnalyzed": 1,
@@ -29,7 +29,7 @@
         "after": "export const DEFAULT_TIMEOUT = 60;"
       },
       "documentation": {
-        "file": "README.md",
+        "file": "examples/changed-default/input/README.md",
         "lineStart": 5,
         "lineEnd": 5,
         "section": "Configuration",
@@ -42,7 +42,7 @@
           "fact": "DEFAULT_TIMEOUT changed from 30 to 60"
         },
         {
-          "source": "README.md:5",
+          "source": "examples/changed-default/input/README.md:5",
           "fact": "Documentation states: \"The default timeout is 30 seconds.\""
         }
       ],

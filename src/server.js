@@ -24,7 +24,6 @@ app.use(express.static(path.join(projectRoot, 'public')));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({
-    status: 'ok',
     timestamp: new Date().toISOString(),
     ...getStatus()
   });
@@ -37,7 +36,7 @@ app.get('/api/examples/:id', async (req, res) => {
   try {
     const data = await fs.readFile(filePath, 'utf8');
     res.json(JSON.parse(data));
-  } catch (err) {
+  } catch {
     res.status(404).json({ error: `Example '${exampleId}' not found.` });
   }
 });
@@ -68,6 +67,40 @@ app.post('/api/analyze/raw', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// 1-Click Auto-Remediation: Apply suggested fix to document text
+app.post('/api/fix/apply', (req, res) => {
+  const { docText, targetSentence, suggestedSentence } = req.body;
+  if (!docText || !targetSentence || !suggestedSentence) {
+    return res.status(400).json({ error: 'docText, targetSentence, and suggestedSentence are required.' });
+  }
+
+  const updatedDocText = docText.replace(targetSentence, suggestedSentence);
+  res.json({
+    success: true,
+    applied: updatedDocText !== docText,
+    updatedDocText
+  });
+});
+
+// Generate download patch for suggested correction
+app.post('/api/fix/patch', (req, res) => {
+  const { fileName = 'README.md', targetSentence, suggestedSentence } = req.body;
+  if (!targetSentence || !suggestedSentence) {
+    return res.status(400).json({ error: 'targetSentence and suggestedSentence are required.' });
+  }
+
+  const patch = `--- a/${fileName}
++++ b/${fileName}
+@@ -1,1 +1,1 @@
+-${targetSentence}
++${suggestedSentence}
+`;
+
+  res.setHeader('Content-Type', 'text/x-diff');
+  res.setHeader('Content-Disposition', `attachment; filename="${path.basename(fileName)}.patch"`);
+  res.send(patch);
 });
 
 // Analyze local git repository

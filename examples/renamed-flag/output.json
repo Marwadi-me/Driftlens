@@ -1,6 +1,6 @@
 {
   "status": "FAIL",
-  "timestamp": "2026-10-31T18:44:17.923Z",
+  "timestamp": "2026-10-31T20:06:46.609Z",
   "summary": {
     "status": "FAIL",
     "filesAnalyzed": 1,
@@ -29,7 +29,7 @@
         "after": "parser.add_argument(\"--deadline\", type=int, default=60, help=\"Job deadline in seconds\")"
       },
       "documentation": {
-        "file": "README.md",
+        "file": "examples/renamed-flag/input/README.md",
         "lineStart": 5,
         "lineEnd": 5,
         "section": "CLI Options",
@@ -42,7 +42,7 @@
           "fact": "Flag renamed from '--timeout' to '--deadline'"
         },
         {
-          "source": "README.md:5",
+          "source": "examples/renamed-flag/input/README.md:5",
           "fact": "Documentation states: \"Use --timeout to stop slow jobs.\""
         }
       ],
