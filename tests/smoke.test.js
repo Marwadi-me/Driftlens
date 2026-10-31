@@ -9,3 +9,4 @@ describe('DriftLens Smoke Test', () => {
     expect(status.status).toBe('ready');
   });
 });
+
