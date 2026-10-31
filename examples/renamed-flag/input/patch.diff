@@ -1,0 +1,7 @@
+diff --git a/cli.py b/cli.py
+--- a/cli.py
++++ b/cli.py
+@@ -5,3 +5,3 @@
+-    parser.add_argument("--timeout", type=int, default=60, help="Job deadline in seconds")
++    parser.add_argument("--deadline", type=int, default=60, help="Job deadline in seconds")
+

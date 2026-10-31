@@ -1,0 +1,33 @@
+{
+  "name": "driftlens",
+  "version": "0.1.0",
+  "description": "Automated Documentation Drift Detection for Pull Requests",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "driftlens": "./bin/driftlens.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "node src/server.js",
+    "driftlens": "node bin/driftlens.js"
+  },
+  "keywords": [
+    "documentation-drift",
+    "static-analysis",
+    "git-diff",
+    "llm",
+    "qwen",
+    "code-review"
+  ],
+  "author": "Yashvardhan Mundhra",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.5"
+  }
+}
+

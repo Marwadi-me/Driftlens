@@ -1,0 +1,7 @@
+diff --git a/src/config.js b/src/config.js
+--- a/src/config.js
++++ b/src/config.js
+@@ -1,2 +1,2 @@
+-export const DEFAULT_TIMEOUT = 30;
++export const DEFAULT_TIMEOUT = 60;
+
