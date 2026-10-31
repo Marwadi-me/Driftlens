@@ -1,0 +1,28 @@
+name: 'DriftLens Documentation Drift Check'
+description: 'Automated documentation drift detection for Pull Requests — Catch the documentation a code change just made wrong.'
+author: 'Yashvardhan Mundhra (loneCommiter)'
+branding:
+  icon: 'file-text'
+  color: 'blue'
+
+inputs:
+  base:
+    description: 'Base git commit or branch (e.g. main or HEAD~1)'
+    required: false
+    default: 'HEAD~1'
+  head:
+    description: 'Head git commit or branch (e.g. HEAD or PR branch)'
+    required: false
+    default: 'HEAD'
+  min-confidence:
+    description: 'Minimum confidence threshold to flag drift (0.0 to 1.0)'
+    required: false
+    default: '0.60'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run DriftLens CLI Analysis
+      shell: bash
+      run: |
+        node ${{ github.action_path }}/bin/driftlens.js analyze --base "${{ inputs.base }}" --head "${{ inputs.head }}" --min-confidence "${{ inputs.min-confidence }}"

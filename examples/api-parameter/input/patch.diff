@@ -1,0 +1,6 @@
+diff --git a/src/api.js b/src/api.js
+--- a/src/api.js
++++ b/src/api.js
+@@ -1,2 +1,2 @@
+-export function registerUser(email, password) {
++export function registerUser(email, password, tenantId) {

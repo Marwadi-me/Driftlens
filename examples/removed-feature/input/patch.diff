@@ -1,0 +1,7 @@
+diff --git a/src/routes.js b/src/routes.js
+--- a/src/routes.js
++++ b/src/routes.js
+@@ -1,3 +1,2 @@
+ export function setupRoutes(app) {
+-  app.get('/api/v1/legacy-export', legacyExportHandler);
+   app.get('/api/v2/export', exportV2Handler);

@@ -1,0 +1,52 @@
+{
+  "status": "FAIL",
+  "timestamp": "2026-10-31T20:06:46.613Z",
+  "summary": {
+    "status": "FAIL",
+    "filesAnalyzed": 1,
+    "documentsAnalyzed": 1,
+    "candidatePairsEvaluated": 2,
+    "findings": 1,
+    "highSeverity": 1,
+    "mediumSeverity": 0,
+    "lowSeverity": 0
+  },
+  "findings": [
+    {
+      "id": "DRIFT-001",
+      "severity": "high",
+      "confidence": 0.97,
+      "confidenceTier": "HIGH",
+      "source": {
+        "file": "src/config.js",
+        "lineStart": 1,
+        "lineEnd": 1,
+        "entityName": "TIMEOUT_SECONDS",
+        "entityType": "CONSTANT",
+        "oldValue": "30",
+        "newValue": "60",
+        "before": "export const TIMEOUT_SECONDS = 30;",
+        "after": "export const TIMEOUT_SECONDS = 60;"
+      },
+      "documentation": {
+        "file": "examples/config-table/input/docs/config.md",
+        "lineStart": 5,
+        "lineEnd": 5,
+        "section": "Server Configuration",
+        "text": "Setting: TIMEOUT_SECONDS | Default: 30 | Description: Socket timeout in seconds"
+      },
+      "reason": "The documented value '30' for 'TIMEOUT_SECONDS' no longer matches the current implementation value '60'.",
+      "evidence": [
+        {
+          "source": "src/config.js:1",
+          "fact": "TIMEOUT_SECONDS changed from 30 to 60"
+        },
+        {
+          "source": "examples/config-table/input/docs/config.md:5",
+          "fact": "Documentation states: \"Setting: TIMEOUT_SECONDS | Default: 30 | Description: Socket timeout in seconds\""
+        }
+      ],
+      "suggestion": "Setting: TIMEOUT_SECONDS | Default: 60 | Description: Socket timeout in seconds"
+    }
+  ]
+}

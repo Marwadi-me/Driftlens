@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-31T20:06:46.613Z",
+  "summary": {
+    "status": "PASS",
+    "filesAnalyzed": 1,
+    "documentsAnalyzed": 1,
+    "candidatePairsEvaluated": 0,
+    "findings": 0,
+    "highSeverity": 0,
+    "mediumSeverity": 0,
+    "lowSeverity": 0
+  },
+  "findings": []
+}

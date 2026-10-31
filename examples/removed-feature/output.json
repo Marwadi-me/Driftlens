@@ -1,0 +1,52 @@
+{
+  "status": "FAIL",
+  "timestamp": "2026-10-31T20:06:46.614Z",
+  "summary": {
+    "status": "FAIL",
+    "filesAnalyzed": 1,
+    "documentsAnalyzed": 1,
+    "candidatePairsEvaluated": 1,
+    "findings": 1,
+    "highSeverity": 1,
+    "mediumSeverity": 0,
+    "lowSeverity": 0
+  },
+  "findings": [
+    {
+      "id": "DRIFT-001",
+      "severity": "high",
+      "confidence": 0.83,
+      "confidenceTier": "MEDIUM",
+      "source": {
+        "file": "src/routes.js",
+        "lineStart": 1,
+        "lineEnd": 1,
+        "entityName": "/api/v1/legacy-export",
+        "entityType": "ROUTE",
+        "oldValue": "/api/v1/legacy-export",
+        "newValue": null,
+        "before": "app.get('/api/v1/legacy-export', legacyExportHandler);",
+        "after": null
+      },
+      "documentation": {
+        "file": "examples/removed-feature/input/README.md",
+        "lineStart": 3,
+        "lineEnd": 3,
+        "section": "Data Export API",
+        "text": "Use the `/api/v1/legacy-export` route for downloading reports in CSV format."
+      },
+      "reason": "The documented value '/api/v1/legacy-export' for '/api/v1/legacy-export' no longer matches the current implementation value 'null'.",
+      "evidence": [
+        {
+          "source": "src/routes.js:1",
+          "fact": "/api/v1/legacy-export changed from /api/v1/legacy-export to null"
+        },
+        {
+          "source": "examples/removed-feature/input/README.md:3",
+          "fact": "Documentation states: \"Use the `/api/v1/legacy-export` route for downloading reports in CSV format.\""
+        }
+      ],
+      "suggestion": "Use the `/api/v1/legacy-export` route for downloading reports in CSV format."
+    }
+  ]
+}
