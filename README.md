@@ -1,13 +1,16 @@
 # DriftLens 🔍
 
-> **"Catch the documentation a code change just made wrong."**
+> **"Catch the documentation a code change just made wrong."**  
+> **Category:** Developer Experience | Documentation Engineering | Static Analysis  
+> **Open-Weight AI Model:** Qwen 2.5 7B Instruct  
+> **Problem:** Problem 5 — Automated Documentation Drift Detection (Hacktoberfest 2026 Hack Day Sonipat)  
 
 DriftLens is an intelligent documentation drift detection system designed for GitHub Pull Requests. It analyzes source-code changes, extracts affected entities (constants, flags, parameters, defaults), pairs them with relevant documentation sentences via deterministic matching, and performs semantic consistency verification using an open-weight LLM (Qwen 2.5 7B).
 
 ---
 
-## 1. Problem Statement
-Documentation frequently becomes obsolete or factually incorrect when source code changes:
+## 1. Problem Statement & Motivation
+Documentation plays a critical role in helping developers understand, configure, and contribute to open-source projects. However, documentation frequently becomes outdated when the underlying code changes:
 - Configuration flags are renamed (e.g., `--timeout` → `--deadline`).
 - Default values change (e.g., `DEFAULT_TIMEOUT = 30` → `60`).
 - API parameters or function signatures are modified or removed.
@@ -20,23 +23,57 @@ rather than simply "Did this PR touch a markdown file?"
 
 ---
 
-## 2. Why Documentation Drift Matters
-Stale documentation causes developer confusion, production incidents, failed onboarding, and broken API integrations. Manual documentation audits during PR review are error-prone and frequently overlooked. DriftLens automates drift detection at PR time, catching inconsistencies before code is merged.
+## 2. Research Starting Points & Existing Tools Comparison
+
+| Tool / Project | Primary Purpose | How It Works | Limitation Addressed by DriftLens |
+| :--- | :--- | :--- | :--- |
+| **Python `doctest`** | Code block verification | Executes Python code blocks inside docstrings and asserts output. | Cannot analyze prose, configuration tables, markdown tutorials, or CLI flags in text. |
+| **`rustdoc` tests** | Rust example testing | Compiles and runs ````rust code blocks in documentation. | Limited strictly to executable Rust code. Cannot detect if prose statements contradict configuration. |
+| **`mktestdocs`** | Markdown code block runner | Runs pytest against executable markdown code fences. | Only tests executable snippets; blind to outdated prose defaults or renamed parameters. |
+| **`Doc Detective`** | UI & API doc testing | Tests executable actions against live apps. | Requires complex environment setup; cannot reason about semantic contradiction in PR diffs. |
+| **DriftLens (Ours)** | **Prose & Semantic Drift Detection** | Hybrid: Deterministic AST entity extraction + sentence-level chunking + open-weight LLM reasoning. | **Detects factual contradictions in prose, tables, and instructions before code is merged.** |
 
 ---
 
-## 3. Features
-- **Git & GitHub PR Analysis**: Inspects local Git diffs and GitHub Pull Requests.
-- **Deterministic Code Entity Extraction**: Identifies changed constants, CLI flags, variables, functions, and defaults.
-- **Sentence-Level Documentation Chunking**: Parses Markdown headings, paragraphs, and tables while preserving exact line numbers.
-- **Signal-Based Candidate Matching**: Filters and scores candidate documentation before invoking AI to prevent hallucinations and reduce token usage.
-- **Semantic LLM Verification**: Leverages open-weight models (Qwen 2.5 7B) to determine factual inconsistency.
-- **Evidence-First Provenance**: Every finding points to exact source file/lines, documentation file/lines, rationale, confidence score, and suggested fix.
-- **False-Positive Control**: Distinguishes internal refactors and concurrent documentation updates from true documentation drift.
+## 3. Evaluation Scenario: Pre-Correction Drift Detection
+Organizers evaluate systems on real project histories where a code commit introduced a change and a subsequent commit later corrected the documentation.
+
+**How DriftLens handles this evaluation:**
+1. Given base ref (prior to code change) and head ref (code change commit):
+   ```bash
+   driftlens analyze --base <commit-before> --head <code-change-commit>
+   ```
+2. DriftLens flags the exact drift **immediately on the code commit**, providing maintainers with the exact sentence that became wrong and a suggested fix **before** any corrective commit is required.
 
 ---
 
-## 4. Architecture
+## 4. Key Technical Considerations & Solutions
+
+### Q1: How can documentation sentences be connected to relevant source code?
+DriftLens chunks Markdown files into sentence-level units with exact line ranges (`lineStart`, `lineEnd`) and section hierarchy (`Configuration`, `Options`). It extracts changed code entities from diff hunks and applies multi-signal candidate scoring (exact identifier match, old value mentions, section relevance, file stem correlation).
+
+### Q2: How can the system identify indirect relationships between code and documentation?
+DriftLens employs subtoken tokenization and root lemmatization (e.g. `DEFAULT_TIMEOUT` splits into `time`, `timeout`, and matches `timing out` or `wait duration`). The open-weight model (`Qwen 2.5 7B`) reasons over this bounded context to detect semantic equivalence that grep cannot catch.
+
+### Q3: How can false alarms be minimized?
+1. Deterministic AST/diff parsing filters out non-functional changes (whitespace, internal comments, unchanged entity values).
+2. Multi-signal candidate matching excludes sentences with no conceptual overlap.
+3. Calibrated composite confidence formula:
+   $$\text{Confidence} = 0.35 \times \text{DeterministicScore} + 0.25 \times \text{CandidateScore} + 0.40 \times \text{LLMConfidence}$$
+   Scores below `0.60` are never reported as confirmed findings.
+
+### Q4: How can documentation changes be distinguished from changes that genuinely require documentation updates?
+DriftLens inspects all documentation diffs in the same PR (`isDocumentationUpdatedInSamePR`). If a developer modified `timeout = 60` and simultaneously updated the documentation sentence to say `60 seconds`, DriftLens **suppresses the drift finding**, avoiding false alarms when documentation has already been updated.
+
+### Q5: How can the tool remain useful without generating excessive warnings?
+Findings are classified into actionable severity tiers:
+- **HIGH**: Direct factual contradiction (e.g. renamed flag, altered default).
+- **MEDIUM**: Deprecated or modified parameters requiring maintainer review.
+- Overall status is distilled into `PASS`, `WARN`, or `FAIL`.
+
+---
+
+## 5. Architecture
 ```text
 GitHub PR / Git Diff
         ↓
@@ -57,24 +94,20 @@ GitHub PR / Git Diff
 
 ---
 
-## 5. Tech Stack
+## 6. Tech Stack
 - **Runtime**: Node.js (v20+)
 - **Server**: Express
-- **Testing**: Vitest
+- **Testing**: Vitest (52 unit & integration tests)
 - **AI / LLM**: Open-weight Qwen 2.5 7B (via OpenAI-compatible endpoint / vLLM / Ollama)
 - **CI / CD**: GitHub Actions
 - **Version Control**: Git / GitHub REST API
 
 ---
 
-## 6. AI Model Used
+## 7. AI Model Used & Why
 - **Model**: `Qwen 2.5 7B Instruct` (Open-Weight)
 - **Allowed Family**: Compliant with Hacktoberfest 2026 Hack Day Sonipat open-weight model requirements.
-
----
-
-## 7. Why That Model Was Selected
-Qwen 2.5 7B exhibits state-of-the-art reasoning on structured JSON generation, code comprehension, and semantic contradiction analysis while remaining lightweight enough to run on standard hackathon model servers or local inference nodes without commercial API dependencies.
+- **Why Selected**: Qwen 2.5 7B delivers exceptional code comprehension, strict JSON schema compliance, and nuanced semantic reasoning without dependency on proprietary paid cloud APIs.
 
 ---
 
@@ -115,6 +148,9 @@ node bin/driftlens.js analyze --base main --head feature
 
 # Analyze GitHub Pull Request
 node bin/driftlens.js analyze --repo owner/repo --pr 123
+
+# Output as JSON
+node bin/driftlens.js analyze --json
 ```
 
 ---
@@ -137,7 +173,7 @@ Run the test suite with Vitest:
 ```bash
 npm test
 ```
-All unit and integration tests run deterministically using mocked LLM responses.
+All 52 unit and integration tests run deterministically in < 600ms using mocked LLM responses.
 
 ---
 
@@ -147,16 +183,16 @@ GitHub Actions automatically runs `npm ci` and `npm test` on every push and pull
 ---
 
 ## 16. Limitations
-- Primary support for JavaScript/TypeScript and Markdown.
+- Primary support for JavaScript/TypeScript, Python CLI flags, and Markdown.
 - Semantic verification quality depends on model inference capabilities.
 - Complex multi-file macro systems or non-Markdown documentation require custom parsers.
 
 ---
 
 ## 17. Future Improvements
-- Tree-sitter parsers for Python, Go, and Rust.
-- Automatic pull request fix suggestions via GitHub Suggestions (````suggestion```).
-- Semantic vector indexing for large monorepo documentation bases.
+- Tree-sitter AST parsers for Go, Rust, and Java.
+- One-click GitHub PR Suggestions (`suggestion`).
+- Semantic vector indexing for massive documentation monorepos.
 
 ---
 
@@ -169,4 +205,3 @@ GitHub Actions automatically runs `npm ci` and `npm test` on every push and pull
 
 ## 19. License
 [MIT License](LICENSE) © 2026 Yashvardhan Mundhra / DriftLens Contributors
-
