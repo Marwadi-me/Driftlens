@@ -5,11 +5,9 @@
 
 ---
 
-## 📽️ Available Presentation Formats
-1. **PowerPoint File (.pptx)**: [`DriftLens_Presentation.pptx`](file:///Users/yashvardhanmundhra/Desktop/driftlens/DriftLens_Presentation.pptx)  
-   *(16:9 widescreen, rich dark-mode color palette, custom card containers, colored callout badges).*
-2. **Interactive Web Presentation**: Run `npm start` and open [`http://localhost:3000/presentation.html`](http://localhost:3000/presentation.html) in your browser.  
-   *(Full-screen presentation mode with keyboard `←` / `→` arrow navigation).*
+## 📽️ Interactive Presentation Format
+* **Interactive Web Presentation**: Run `npm start` and open [`http://localhost:3000/presentation.html`](http://localhost:3000/presentation.html) in your browser.  
+  *(Full-screen 16:9 presentation mode with keyboard `←` / `→` arrow navigation, live stats, and high-contrast dark theme).*
 
 ---
 
