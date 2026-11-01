@@ -216,9 +216,49 @@ driftlens analyze --repo <repo-path> --base <before-code-change> --head <code-ch
   - Status: `PASS` (0 findings)
   - Proves that DriftLens does not create false alarms on code changes that leave documentation valid.
 
+### Demo 4: Config Table Drift
+- **Code Change:** `TIMEOUT_SECONDS = 30` → `60` in `src/config.js`
+- **Doc Statement:** `| TIMEOUT_SECONDS | 30 | Socket timeout in seconds |` in `docs/config.md`
+- **DriftLens Output:**
+  - Status: `FAIL` (Severity: `HIGH`, Confidence: `97%`)
+  - Explanation: Detects obsolete values in structured Markdown tables.
+  - Suggested Fix: Updates table row value from 30 to 60.
+
+### Demo 5: API Parameter Signature Update
+- **Code Change:** `registerUser(email, password)` → `registerUser(email, password, tenantId)`
+- **Doc Statement:** `"call registerUser(email, password) with standard credentials"`
+- **DriftLens Output:**
+  - Status: `FAIL` (Severity: `HIGH`, Confidence: `91%`)
+  - Explanation: Function signature was modified in source code, but documentation reflects old parameter list.
+
+### Demo 6: Removed Feature / Route Drift
+- **Code Change:** Deleted `app.get('/api/v1/legacy-export')`
+- **Doc Statement:** `"Use the /api/v1/legacy-export route for downloading reports in CSV format."`
+- **DriftLens Output:**
+  - Status: `FAIL` (Severity: `HIGH`, Confidence: `90%`)
+  - Explanation: Feature was deleted in code but remains documented.
+
 ---
 
-## 7. Judge Q&A Defense Sheet
+## 7. Additional Architectural Innovations
+
+### 1. Starter README Generator from Code Analysis
+When a repository has **no documentation**, DriftLens can statically extract all constants, defaults, CLI arguments, and API routes to generate a structured starter `README.md`:
+```bash
+node bin/driftlens.js generate-readme --repo ./my-repo
+```
+
+### 2. Live Golden Benchmark Suite
+A dedicated benchmark tool (`npm run benchmark`) verifies all 6 golden evaluation scenarios dynamically against the live engine in real-time, reporting execution latencies and confidence metrics.
+
+### 3. Performance Architecture
+- **$O(1)$ Hash Table Lookups**: Pre-computes token sets and stem sets on documentation chunks.
+- **Worker Pool Concurrency**: Concurrently queries the LLM evidence engine using a configurable worker pool.
+- **Parallel Asynchronous File Walking**: Traverses directories and reads documents in parallel with `Promise.all`.
+
+---
+
+## 8. Judge Q&A Defense Sheet
 
 1. **Why use an AI model instead of Grep?**  
    *Exact string matching or grep can find where words appear, but cannot determine whether changing a number from 30 to 60 contradicts the sentence "The application waits for half a minute before timing out." Only semantic AI reasoning can detect conceptual and semantic drift.*
