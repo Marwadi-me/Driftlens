@@ -55,9 +55,30 @@ export class MockLLMClient extends BaseLLMClient {
       };
     }
 
-    // Changed default value / constant scenario
+    // Removed feature or route scenario
+    if (entity.status === 'removed' && entityName && docText.includes(entityName)) {
+      return {
+        drift: true,
+        confidence: 0.95,
+        severity: 'high',
+        reason: `Feature or route '${entity.name}' was removed in code, but documentation continues to describe it.`,
+        evidence: [
+          {
+            source: `${entity.file}:${entity.line}`,
+            fact: `'${entity.name}' was removed from codebase`
+          },
+          {
+            source: `${docChunk.file}:${docChunk.lineStart}`,
+            fact: `Documentation states: "${docChunk.text}"`
+          }
+        ],
+        suggestion: `Remove references to obsolete '${entity.name}'.`
+      };
+    }
+
+    // Changed default value / constant / signature scenario
     if (oldValue && docText.includes(oldValue)) {
-      const suggested = newValue ? docChunk.text.replace(new RegExp(`\\b${oldValue}\\b`, 'g'), newValue) : docChunk.text;
+      const suggested = newValue ? docChunk.text.replace(entity.oldValue, entity.newValue) : docChunk.text;
       return {
         drift: true,
         confidence: 0.96,

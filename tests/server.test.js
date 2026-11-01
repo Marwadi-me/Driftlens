@@ -59,4 +59,22 @@ describe('Express Server API', () => {
     expect(responseData.applied).toBe(true);
     expect(responseData.updatedDocText).toBe('The default timeout is 60 seconds.');
   });
+
+  it('POST /api/generate/readme synthesizes README markdown from codebase', async () => {
+    let responseData = null;
+    const req = {
+      body: {}
+    };
+    const res = {
+      json: (data) => { responseData = data; },
+      status: () => res
+    };
+
+    const readmeRoute = app._router.stack.find(s => s.route && s.route.path === '/api/generate/readme');
+    expect(readmeRoute).toBeDefined();
+
+    await readmeRoute.route.stack[0].handle(req, res, () => {});
+    expect(responseData.success).toBe(true);
+    expect(responseData.markdown).toContain('# driftlens');
+  });
 });

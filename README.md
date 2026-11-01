@@ -97,9 +97,10 @@ GitHub PR / Git Diff
 ## 6. Tech Stack
 - **Runtime**: Node.js (v20+)
 - **Server**: Express
-- **Testing**: Vitest (52 unit & integration tests)
+- **Testing**: Vitest (70 unit & integration tests)
 - **AI / LLM**: Open-weight Qwen 2.5 7B (via OpenAI-compatible endpoint / vLLM / Ollama)
-- **CI / CD**: GitHub Actions
+- **UI Dashboard**: Interactive Web Studio with SVG Visual Impact Graph & 1-Click Remediation
+- **CI / CD**: GitHub Actions CI + Reusable `action.yml`
 - **Version Control**: Git / GitHub REST API
 
 ---
@@ -149,31 +150,64 @@ node bin/driftlens.js analyze --base main --head feature
 # Analyze GitHub Pull Request
 node bin/driftlens.js analyze --repo owner/repo --pr 123
 
-# Output as JSON
+# Output structured findings as JSON
 node bin/driftlens.js analyze --json
+
+# Generate a starter README.md from codebase analysis (for zero-doc repos)
+node bin/driftlens.js generate-readme --repo ./my-project
 ```
 
 ---
 
-## 12. GitHub PR Usage
-DriftLens can be invoked in GitHub Actions workflows to comment on or annotate Pull Requests with detected documentation drift.
+## 12. Interactive Web Dashboard
+DriftLens includes a real-time web dashboard featuring an SVG Visual Impact Graph, live diff analysis, 1-click remediation, and automatic README generation.
+
+Start the dashboard:
+```bash
+npm start
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser:
+- **SVG Impact Graph**: Visualizes connections between changed code files and affected markdown documentation sections.
+- **6 Golden Demo Buttons**: 1-click presets for all hackathon evaluation scenarios.
+- **1-Click Auto-Fix**: Automatically updates documentation with suggested fixes.
+- **✨ Generate README**: Synthesizes a structured starter `README.md` directly from source code entities and package configurations.
 
 ---
 
-## 13. Examples
-See the `examples/` directory for verified scenarios:
-- `examples/renamed-flag/`: Detects CLI flag `--timeout` renamed to `--deadline`.
-- `examples/changed-default/`: Detects `DEFAULT_TIMEOUT` changed from 30 to 60.
-- `examples/no-drift/`: Verifies internal refactors do not trigger false alarms.
+## 13. GitHub PR Usage & GitHub Action
+DriftLens can be invoked in GitHub Actions workflows to comment on or annotate Pull Requests with detected documentation drift. A reusable GitHub Action is provided via `action.yml`:
+
+```yaml
+- name: DriftLens Documentation Drift Check
+  uses: Marwadi-me/Driftlens@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
 
 ---
 
-## 14. Testing
+## 14. Golden Evaluation Scenarios
+See the `examples/` directory for verified scenarios covering the hackathon requirements:
+- `examples/renamed-flag/`: Detects CLI flag `--timeout` renamed to `--deadline` (FAIL, 90% confidence).
+- `examples/changed-default/`: Detects `DEFAULT_TIMEOUT` changed from 30 to 60 (FAIL, 93% confidence).
+- `examples/no-drift/`: Verifies internal refactors do not trigger false alarms (PASS, 0 findings, false-positive control).
+- `examples/config-table/`: Detects outdated table row `TIMEOUT_SECONDS: 30` → 60 (FAIL, 97% confidence).
+- `examples/api-parameter/`: Detects function signature update `registerUser(email, password, tenantId)` (FAIL, 91% confidence).
+- `examples/removed-feature/`: Detects deleted route `/api/v1/legacy-export` still documented (FAIL, 95% confidence).
+
+---
+
+## 15. Testing & Benchmarking
 Run the test suite with Vitest:
 ```bash
 npm test
 ```
-All 52 unit and integration tests run deterministically in < 600ms using mocked LLM responses.
+All 70 unit, integration, and live golden scenario tests run deterministically in < 600ms using mocked LLM responses.
+
+Run the live evaluation benchmark suite across all 6 problem scenarios:
+```bash
+npm run benchmark
+```
 
 ---
 

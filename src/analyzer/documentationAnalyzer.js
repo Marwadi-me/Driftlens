@@ -10,7 +10,7 @@ import path from 'node:path';
 export function splitIntoSentences(text, startLine) {
   if (!text || !text.trim()) return [];
 
-  const rawLines = text.split('\n');
+  const rawLines = text.split(/\r?\n/);
   const sentences = [];
   let currentSentence = '';
   let sentenceStartLine = startLine;
@@ -278,18 +278,17 @@ export async function findDocumentationFiles(repoPath) {
  */
 export async function extractAllRepoDocumentation(repoPath) {
   const files = await findDocumentationFiles(repoPath);
-  const allChunks = [];
+  const chunkArrays = await Promise.all(
+    files.map(async (relFile) => {
+      try {
+        const fullPath = path.join(repoPath, relFile);
+        const content = await fs.readFile(fullPath, 'utf8');
+        return extractDocumentationChunks(content, relFile);
+      } catch {
+        return [];
+      }
+    })
+  );
 
-  for (const relFile of files) {
-    try {
-      const fullPath = path.join(repoPath, relFile);
-      const content = await fs.readFile(fullPath, 'utf8');
-      const chunks = extractDocumentationChunks(content, relFile);
-      allChunks.push(...chunks);
-    } catch {
-      // Ignore unreadable files gracefully
-    }
-  }
-
-  return allChunks;
+  return chunkArrays.flat();
 }

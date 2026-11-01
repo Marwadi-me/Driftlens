@@ -10,6 +10,7 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
+    "benchmark": "node scripts/benchmarkLiveExamples.js",
     "start": "node src/server.js",
     "driftlens": "node bin/driftlens.js"
   },

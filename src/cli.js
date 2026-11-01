@@ -1,5 +1,6 @@
 import { analyzeLocalRepository, analyzeGitHubPR } from './index.js';
 import { formatTerminalReport, formatGitHubPRReview } from './report/reportGenerator.js';
+import { generateReadmeForRepo } from './analyzer/docGenerator.js';
 
 function parseArgs(args) {
   const parsed = {
@@ -19,6 +20,8 @@ function parseArgs(args) {
 
     if (arg === 'analyze') {
       parsed.command = 'analyze';
+    } else if (arg === 'generate-readme' || arg === 'init-docs') {
+      parsed.command = 'generate-readme';
     } else if (arg === '--repo' && i + 1 < args.length) {
       parsed.repo = args[++i];
     } else if (arg === '--base' && i + 1 < args.length) {
@@ -47,8 +50,9 @@ function printHelp() {
   console.log(`
 DriftLens - Catch the documentation a code change just made wrong.
 
-USAGE:
-  driftlens analyze [options]
+COMMANDS:
+  driftlens analyze [options]          Analyze PR or Git diff for documentation drift
+  driftlens generate-readme [options]  Generate starter README.md from codebase analysis
 
 OPTIONS:
   --repo <path|owner/repo>   Repository path or GitHub owner/name (default: .)
@@ -64,7 +68,7 @@ OPTIONS:
 EXAMPLES:
   driftlens analyze --repo ./my-repo --base main --head feature
   driftlens analyze --repo Marwadi-me/Driftlens --pr 1
-  driftlens analyze --json
+  driftlens generate-readme --repo ./my-repo
 `);
 }
 
@@ -77,6 +81,13 @@ export async function runCLI(argv = process.argv.slice(2)) {
   }
 
   try {
+    // Generate README command
+    if (options.command === 'generate-readme') {
+      const markdown = await generateReadmeForRepo(options.repo);
+      console.log(markdown);
+      return 0;
+    }
+
     let report;
 
     // GitHub PR mode
@@ -134,4 +145,3 @@ export async function runCLI(argv = process.argv.slice(2)) {
     return 1;
   }
 }
-
