@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DriftLens — Hackathon Presentation</title>
+  <title>DriftLens — Hackathon Presentation (Detailed & Colorful)</title>
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: #121826;
-      --card-border: #1f293d;
+      --bg: #0b0f19;
+      --card-bg: #121a2c;
+      --card-border: #24304a;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --accent: #38bdf8;
+      --text-light: #cbd5e1;
+      --accent-cyan: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-indigo: #818cf8;
       --accent-green: #10b981;
       --accent-rose: #f43f5e;
       --accent-amber: #f59e0b;
@@ -31,28 +34,36 @@
       flex-direction: column;
     }
 
+    /* Top Accent Gradient Bar */
+    .top-bar {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-green));
+    }
+
     .slide-viewport {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px;
+      padding: 30px;
       position: relative;
     }
 
     .slide {
       display: none;
       width: 100%;
-      max-width: 1200px;
-      height: 90%;
-      background: radial-gradient(circle at top right, #111a33, var(--card-bg) 60%);
+      max-width: 1240px;
+      height: 92%;
+      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), var(--card-bg) 65%);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 48px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
       flex-direction: column;
       justify-content: space-between;
       animation: fadeIn 0.3s ease;
+      overflow-y: auto;
     }
 
     .slide.active {
@@ -60,44 +71,64 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .tagline {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.1em;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tagline::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
     }
 
     h1 {
-      font-size: 40px;
-      font-weight: 800;
+      font-size: 42px;
+      font-weight: 900;
       color: #fff;
-      line-height: 1.2;
-      margin-bottom: 24px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
 
     h2 {
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
       color: #fff;
-      margin-bottom: 24px;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 20px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
+      gap: 18px;
     }
 
     .grid-4 {
@@ -107,85 +138,93 @@
     }
 
     .card {
-      background: rgba(18, 24, 38, 0.85);
+      background: rgba(18, 26, 44, 0.9);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px;
+      position: relative;
     }
 
+    .card-cyan { border-color: rgba(56, 189, 248, 0.4); background: rgba(15, 29, 56, 0.6); }
+    .card-purple { border-color: rgba(168, 85, 247, 0.4); background: rgba(26, 20, 51, 0.6); }
+    .card-green { border-color: rgba(16, 185, 129, 0.4); background: rgba(13, 38, 32, 0.6); }
+    .card-amber { border-color: rgba(245, 158, 11, 0.4); background: rgba(38, 30, 15, 0.6); }
+    .card-rose { border-color: rgba(244, 63, 94, 0.4); background: rgba(40, 18, 28, 0.6); }
+
     .card h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: var(--accent);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .card p {
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.5;
     }
 
     .card ul {
-      margin-top: 10px;
-      padding-left: 20px;
-      color: var(--text-muted);
-      font-size: 14px;
+      margin-top: 8px;
+      padding-left: 18px;
+      color: var(--text-light);
+      font-size: 12.5px;
       line-height: 1.6;
     }
 
+    .code-box {
+      background: #070a12;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--accent-cyan);
+      line-height: 1.45;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
+
     .stat-number {
-      font-size: 44px;
-      font-weight: 800;
-      color: var(--accent-green);
+      font-size: 38px;
+      font-weight: 900;
       font-family: var(--font-mono);
       line-height: 1;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .stat-label {
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .code-block {
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--accent);
-      line-height: 1.5;
-      margin-top: 12px;
+      letter-spacing: 0.08em;
+      font-weight: 600;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 12px;
+      font-size: 12.5px;
+      margin-top: 10px;
     }
 
     th, td {
-      padding: 12px 16px;
+      padding: 10px 14px;
       border: 1px solid var(--card-border);
       text-align: left;
     }
 
     th {
-      background: rgba(30, 41, 59, 0.5);
-      color: var(--accent);
-      font-weight: 600;
+      background: rgba(30, 41, 59, 0.6);
+      color: var(--accent-cyan);
+      font-weight: 700;
     }
 
     td {
-      background: rgba(18, 24, 38, 0.6);
-      color: var(--text);
+      background: rgba(18, 26, 44, 0.6);
+      color: var(--text-light);
     }
 
     .highlight-row td {
@@ -197,25 +236,28 @@
 
     /* Controls Bar */
     .controls {
-      height: 64px;
+      height: 58px;
       border-top: 1px solid var(--card-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0 40px;
-      background: var(--card-bg);
+      background: #0d1322;
     }
 
     .btn {
       background: #1e293b;
       color: var(--text);
       border: 1px solid var(--card-border);
-      padding: 8px 18px;
+      padding: 7px 16px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn:hover {
@@ -224,48 +266,54 @@
     }
 
     .slide-counter {
-      font-size: 14px;
-      color: var(--text-muted);
+      font-size: 13px;
+      color: var(--accent-cyan);
       font-family: var(--font-mono);
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
+
+  <div class="top-bar"></div>
 
   <div class="slide-viewport">
 
     <!-- SLIDE 1 -->
     <div class="slide active">
       <div>
-        <div class="tagline">★ Hacktoberfest 2026 Hack Day Sonipat — Problem 5</div>
+        <div class="tagline">Hacktoberfest 2026 Hack Day Sonipat — Problem 5</div>
         <h1>DriftLens 🔍</h1>
-        <p style="font-size: 22px; color: var(--accent); margin-bottom: 8px;">Automated Documentation Drift Detection for Pull Requests</p>
-        <p style="font-size: 16px; color: var(--text-muted); font-style: italic;">"Catch the documentation a code change just made wrong."</p>
+        <p style="font-size: 22px; color: var(--accent-cyan); font-weight: 700; margin-bottom: 6px;">Automated Documentation Drift Detection for Pull Requests</p>
+        <p style="font-size: 16px; color: var(--text-light); font-style: italic;">"Catch the documentation a code change just made wrong."</p>
       </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <h3 style="color: var(--accent-green);">👤 LoneCommiter</h3>
+      <div class="grid-3" style="margin-top: 24px;">
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">👤 TEAM LONECOMMITER</h3>
           <ul>
-            <li><b>Yashvardhan Mundhra</b></li>
-            <li>Category: Static Analysis & DevEx</li>
-            <li>Evaluation: Problem 5</li>
+            <li><b>Solo Developer:</b> Yashvardhan Mundhra</li>
+            <li><b>Category:</b> Static Analysis & Dev Experience</li>
+            <li><b>Evaluation:</b> Problem 5 (Documentation Drift)</li>
+            <li><b>Repository:</b> github.com/Marwadi-me/Driftlens</li>
           </ul>
         </div>
-        <div class="card">
-          <h3 style="color: var(--accent);">🤖 Open-Weight AI</h3>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">🤖 OPEN-WEIGHT AI ENGINE</h3>
           <ul>
-            <li><b>Qwen 2.5 7B Instruct</b></li>
-            <li>100% Hackathon Rule Compliant</li>
-            <li>Zero proprietary paid APIs</li>
+            <li><b>Model:</b> Qwen 2.5 7B Instruct</li>
+            <li><b>100% Hackathon Rule Compliant</b></li>
+            <li>Zero closed proprietary APIs (No GPT/Claude)</li>
+            <li>OpenAI-compatible local vLLM / Ollama</li>
           </ul>
         </div>
-        <div class="card">
-          <h3 style="color: var(--accent-amber);">🚀 Production Ready</h3>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">🚀 PRODUCTION DELIVERABLES</h3>
           <ul>
-            <li>CLI & Reusable GitHub Action</li>
-            <li>Web Studio & Impact Graph</li>
-            <li><b>70 Tests (100% passing)</b></li>
+            <li>CLI Tool + Reusable GitHub Action (<code style="color:#fff;">action.yml</code>)</li>
+            <li>Interactive Web Studio + SVG Blast Radius Graph</li>
+            <li>1-Click Auto-Fix & Git Patch Generator</li>
+            <li><b>70 Unit & Integration Tests (100% Passing)</b></li>
           </ul>
         </div>
       </div>
@@ -275,26 +323,35 @@
     <!-- SLIDE 2 -->
     <div class="slide">
       <div>
-        <div class="tagline">The Problem</div>
-        <h2>Code Moves Fast — Documentation Silently Lags Behind</h2>
+        <div class="tagline">The Real-World Dilemma</div>
+        <h2>Code Moves Fast — Documentation Silently Becomes Wrong</h2>
+        <div class="subtitle">Every day, pull requests introduce code changes that silently invalidate prose, tables, and API tutorials.</div>
       </div>
 
       <div class="grid-2">
-        <div class="card" style="border-left: 4px solid var(--accent-rose);">
-          <h3 style="color: var(--accent-rose);">⚠️ Renamed CLI Flags</h3>
-          <p>A CLI flag is renamed (<code style="color: #fff;">--timeout</code> → <code style="color: #fff;">--deadline</code>), but user guides and tutorials continue explaining the obsolete flag name.</p>
+        <div class="card card-rose">
+          <h3 style="color: var(--accent-rose);">⚠️ Flag Renames & Obsolete Guides</h3>
+          <p>A CLI flag is renamed (<code style="color:#fff;">--timeout</code> → <code style="color:#fff;">--deadline</code>), but user guides and tutorials continue explaining the obsolete flag name.</p>
+          <div class="code-box">Code: parser.add_argument("--deadline", type=int, default=60)
+Doc:  Use --timeout to terminate slow jobs.</div>
         </div>
-        <div class="card" style="border-left: 4px solid var(--accent-rose);">
-          <h3 style="color: var(--accent-rose);">⚠️ Changed Default Configurations</h3>
-          <p>A socket timeout changes from 30s to 60s in source code, but configuration tables and architecture docs still state 30s.</p>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">⚠️ Altered Defaults & Stale Tables</h3>
+          <p>A socket timeout changes from 30s to 60s in source code, but configuration tables in Markdown continue displaying 30s.</p>
+          <div class="code-box">Code: export const DEFAULT_TIMEOUT = 60;
+Doc:  | Setting | Default | => | DEFAULT_TIMEOUT | 30 |</div>
         </div>
-        <div class="card" style="border-left: 4px solid var(--accent-rose);">
-          <h3 style="color: var(--accent-rose);">⚠️ Modified API Signatures</h3>
-          <p>Function signatures change (<code style="color: #fff;">registerUser(email, password, tenantId)</code>), yet public API tutorials describe the legacy parameters.</p>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">⚠️ Modified Signatures & Broken Tutorials</h3>
+          <p>Function signatures change (<code style="color:#fff;">registerUser(email, password, tenantId)</code>), yet public API tutorials describe the legacy parameters.</p>
+          <div class="code-box">Code: function registerUser(email, password, tenantId)
+Doc:  Call registerUser(email, password) to sign up.</div>
         </div>
-        <div class="card" style="border-left: 4px solid var(--accent-rose);">
-          <h3 style="color: var(--accent-rose);">⚠️ Deleted Features & Routes</h3>
-          <p>An endpoint (<code style="color: #fff;">/api/v1/legacy-export</code>) is removed from code, but remains documented as available in README files.</p>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">⚠️ Deleted Features & Zombie Docs</h3>
+          <p>An endpoint (<code style="color:#fff;">/api/v1/legacy-export</code>) is deleted from code, but remains documented as active in API docs.</p>
+          <div class="code-box">Code: Route deleted in PR diff
+Doc:  Use /api/v1/legacy-export to download reports in CSV.</div>
         </div>
       </div>
       <div></div>
@@ -303,41 +360,48 @@
     <!-- SLIDE 3 -->
     <div class="slide">
       <div>
-        <div class="tagline">Industry State-of-the-Art Comparison</div>
-        <h2>Why Existing Tools Cannot Solve This Problem</h2>
+        <div class="tagline">State of the Art Comparison</div>
+        <h2>Why Existing Documentation Tools Fail</h2>
+        <div class="subtitle">Existing solutions only validate executable code fences. DriftLens bridges the semantic prose divide.</div>
       </div>
 
       <table>
         <thead>
           <tr>
-            <th>Tool</th>
-            <th>Primary Purpose</th>
-            <th>How It Works</th>
-            <th>Fundamental Blindspot</th>
+            <th>Tool / Technology</th>
+            <th>Primary Scope</th>
+            <th>How It Operates</th>
+            <th>Why It Fails on Problem 5</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><b>Python doctest</b></td>
-            <td>Docstring test runner</td>
+            <td>Docstring snippets</td>
             <td>Executes Python snippets in docstrings and asserts output.</td>
-            <td>Blind to markdown prose, tutorial text, and config tables.</td>
+            <td>Blind to Markdown prose, tutorial text, and config tables.</td>
           </tr>
           <tr>
             <td><b>rustdoc tests</b></td>
-            <td>Rust code block testing</td>
-            <td>Compiles and runs executable ```rust code fences.</td>
+            <td>Rust code fences</td>
+            <td>Compiles and executes ```rust code blocks in documentation.</td>
             <td>Limited to Rust code; cannot analyze explanatory prose.</td>
           </tr>
           <tr>
+            <td><b>mktestdocs</b></td>
+            <td>Markdown runner</td>
+            <td>Executes code fences inside Markdown via pytest runner.</td>
+            <td>Only tests executable code snippets; blind to prose defaults.</td>
+          </tr>
+          <tr>
             <td><b>Doc Detective</b></td>
-            <td>UI & action testing</td>
-            <td>Tests browser and UI flows against live deployed apps.</td>
+            <td>UI action testing</td>
+            <td>Executes browser actions and queries against live apps.</td>
             <td>Requires live apps; cannot reason about PR diff contradictions.</td>
           </tr>
           <tr class="highlight-row">
-            <td><b>DriftLens (Ours)</b></td>
-            <td><b>Semantic Drift Detection</b></td>
+            <td><b>DriftLens (Ours) 🏆</b></td>
+            <td><b>Semantic Prose & Tables</b></td>
             <td><b>AST Entity Extraction + Markdown Chunking + Qwen 2.5 7B.</b></td>
             <td><b>Directly flags prose contradictions before code is merged.</b></td>
           </tr>
@@ -349,34 +413,35 @@
     <!-- SLIDE 4 -->
     <div class="slide">
       <div>
-        <div class="tagline">Architecture</div>
-        <h2>The 6-Stage DriftLens Pipeline</h2>
+        <div class="tagline">System Philosophy</div>
+        <h2>The DriftLens Solution: Hybrid Intelligence</h2>
+        <div class="subtitle">Never send an entire repository blindly to an LLM. Combine deterministic AST parsing with bounded semantic AI.</div>
       </div>
 
       <div class="grid-3">
-        <div class="card">
-          <h3>1. Git Diff Parser</h3>
-          <p>Extracts unified git diffs across base...head, classifying source code, docs, and configs with shallow-clone resilience.</p>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">1. Deterministic Grounding</h3>
+          <p>AST/diff parser locates changed code hunks and tags every entity with exact file paths and line ranges. The AI never invents line numbers.</p>
         </div>
-        <div class="card">
-          <h3>2. Entity Extractor</h3>
-          <p>Statically extracts changed CLI flags, constants, defaults, and API routes from changed hunks.</p>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">2. Sentence-Level Granularity</h3>
+          <p>Documentation is chunked into individual sentence units and table rows with exact line ranges and section hierarchies (## Configuration).</p>
         </div>
-        <div class="card">
-          <h3>3. Sentence Chunking</h3>
-          <p>Deconstructs Markdown into sentence-level units with exact line ranges, sections, and table rows.</p>
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">3. Multi-Signal Filtering</h3>
+          <p>Candidate matcher pairs changed entities with sentences using 4 distinct signals (exact names, old values, section keywords, file stems).</p>
         </div>
-        <div class="card">
-          <h3 style="color: var(--accent-green);">4. Candidate Matcher</h3>
-          <p>Multi-signal scoring: exact identifier (+45%), old value (+30%), section (+15%), file correlation (+15%).</p>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">4. Bounded AI Reasoning</h3>
+          <p>Qwen 2.5 7B evaluates only the tightly bounded pair: 'Does this code change contradict this sentence?' Strict JSON schema enforcement.</p>
         </div>
-        <div class="card" style="border-color: var(--accent-green);">
-          <h3 style="color: var(--accent-green);">5. Same-PR Shield</h3>
-          <p>Detects if the documentation was already updated in the same PR and suppresses false warnings.</p>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">5. Same-PR Shield</h3>
+          <p>Detects if the developer already updated the documentation in the same PR. If so, drift is suppressed, achieving zero false alarms.</p>
         </div>
-        <div class="card">
-          <h3 style="color: var(--accent);">6. Qwen 2.5 7B AI</h3>
-          <p>Evaluates semantic contradiction over bounded evidence with calibrated composite confidence.</p>
+        <div class="card card-rose">
+          <h3 style="color: var(--accent-rose);">6. 1-Click Auto-Remediation</h3>
+          <p>Generates exact replacement suggestions, ready for 1-click in-browser patching or downloadable unified git .patch files.</p>
         </div>
       </div>
       <div></div>
@@ -385,32 +450,35 @@
     <!-- SLIDE 5 -->
     <div class="slide">
       <div>
-        <div class="tagline">Confidence Formula & Zero False Alarms</div>
-        <h2>Mathematical Confidence Calibration</h2>
+        <div class="tagline">Architecture Pipeline</div>
+        <h2>End-to-End 6-Stage Analysis Workflow</h2>
+        <div class="subtitle">How a Pull Request diff flows from raw Git commits into precise, verified documentation drift findings.</div>
       </div>
 
       <div class="grid-2">
-        <div class="card">
-          <h3>Calibrated Formula</h3>
-          <div class="code-block">
-            Confidence = 0.35 × DetScore + 0.25 × CandScore + 0.40 × LLMScore
-          </div>
-          <ul style="margin-top: 16px;">
-            <li><b>Deterministic Score (35%)</b>: 1.0 for hard AST shifts (renamed flags, constants); 0.80 for general changes.</li>
-            <li><b>Candidate Overlap (25%)</b>: Exact identifier match, old value mention, section relevance.</li>
-            <li><b>LLM Reasoning (40%)</b>: Open-weight Qwen 2.5 7B semantic contradiction score.</li>
-            <li><b>Threshold Filter</b>: Scores below 60% are discarded to eliminate false alarms.</li>
-          </ul>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">Stage 1: Git Diff Extraction</h3>
+          <p>Runs git diff -U3 base...head or calls GitHub REST API. Classifies files into source, docs, tests, configs. Shallow clone resilient.</p>
         </div>
-
-        <div class="card">
-          <h3>Actionable Severity Tiers</h3>
-          <ul>
-            <li><b style="color: var(--accent-rose);">🔴 HIGH SEVERITY</b>: Direct factual contradiction (renamed flag, altered default). Blocks merge with Exit Code 1.</li>
-            <li><b style="color: var(--accent-amber);">🟡 MEDIUM SEVERITY</b>: Behavioral nuance or indirect parameter shift.</li>
-            <li><b style="color: var(--accent);">⚪ LOW SEVERITY</b>: Minor reference drift.</li>
-            <li><b style="color: var(--accent-green);">🛡️ Same-PR Suppression</b>: If the developer already corrected the documentation in the same commit, DriftLens suppresses the warning.</li>
-          </ul>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">Stage 2: Entity Extraction</h3>
+          <p>Statically extracts changed CLI flags (--timeout -> --deadline), constants, defaults, and API function signatures from diff hunks.</p>
+        </div>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">Stage 3: Documentation Chunking</h3>
+          <p>Indexes all Markdown files in repo. Chunks text into sentence-level units with line offsets, sections, and table rows.</p>
+        </div>
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">Stage 4: Multi-Signal Matching</h3>
+          <p>Scores candidate pairs: Exact Identifier (+45%), Old Value Mention (+30%), Section Relevance (+15%), File Correlation (+15%).</p>
+        </div>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">Stage 5: Same-PR Suppression</h3>
+          <p>Edge-case shield: If documentation was updated within the same PR hunk, drift is suppressed to prevent false alarms.</p>
+        </div>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">Stage 6: Qwen 2.5 7B Verification</h3>
+          <p>Open-weight model evaluates semantic contradiction. Computes calibrated composite confidence and produces suggested fix.</p>
         </div>
       </div>
       <div></div>
@@ -419,34 +487,36 @@
     <!-- SLIDE 6 -->
     <div class="slide">
       <div>
-        <div class="tagline">100% Evaluation Coverage</div>
-        <h2>6 Golden Demos (Pre-Correction Detection)</h2>
+        <div class="tagline">Deterministic Matching</div>
+        <h2>Multi-Signal Candidate Matching & Subword Lemmatization</h2>
+        <div class="subtitle">Eliminating brute-force LLM evaluation by ranking top relevant sentences deterministically.</div>
       </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <h3>1. Renamed CLI Flag</h3>
-          <p><code style="color: #fff;">--timeout</code> → <code style="color: #fff;">--deadline</code><br><b>Result:</b> FAIL (98% Conf)<br><b>Fix:</b> "Use --deadline..."</p>
+      <div class="grid-2">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">🎯 4-Signal Candidate Scoring Model</h3>
+          <ul>
+            <li><b>Signal A: Exact Identifier Match (+45%):</b> Matches exact flag or constant name (e.g., <code style="color:#fff;">--timeout</code>, <code style="color:#fff;">DEFAULT_TIMEOUT</code>) in documentation text.</li>
+            <li><b>Signal B: Old Value Mention (+30%):</b> Detects mentions of the previous implementation value (e.g., '30 seconds', '/api/v1/export') using boundary-aware regex.</li>
+            <li><b>Signal C: Section Context (+15%):</b> Awards score if sentence appears under relevant headings like 'Configuration', 'CLI Options', 'API Reference'.</li>
+            <li><b>Signal D: File Path Correlation (+15%):</b> Matches source file base name (<code style="color:#fff;">src/config.js</code>) to doc file base name (<code style="color:#fff;">docs/config.md</code>) or primary README.</li>
+          </ul>
         </div>
-        <div class="card">
-          <h3>2. Changed Default</h3>
-          <p><code style="color: #fff;">DEFAULT_TIMEOUT: 30 → 60</code><br><b>Result:</b> FAIL (93% Conf)<br><b>Fix:</b> "Default timeout is 60s"</p>
-        </div>
-        <div class="card" style="border-color: var(--accent-green);">
-          <h3 style="color: var(--accent-green);">3. False-Positive Control</h3>
-          <p>Internal logic refactoring<br><b>Result:</b> PASS (0 findings)<br><b>Proof:</b> Zero false alarms!</p>
-        </div>
-        <div class="card">
-          <h3>4. Config Table Drift</h3>
-          <p><code style="color: #fff;">TIMEOUT_SECONDS: 30 → 60</code><br><b>Result:</b> FAIL (97% Conf)<br><b>Fix:</b> Updates table row to 60</p>
-        </div>
-        <div class="card">
-          <h3>5. API Signature</h3>
-          <p><code style="color: #fff;">registerUser(email, pass, tenantId)</code><br><b>Result:</b> FAIL (91% Conf)<br><b>Fix:</b> Updates parameters</p>
-        </div>
-        <div class="card">
-          <h3>6. Deleted Route</h3>
-          <p><code style="color: #fff;">Deleted /api/v1/legacy-export</code><br><b>Result:</b> FAIL (90% Conf)<br><b>Fix:</b> Flags obsolete route</p>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">🧩 Subword Tokenization & Root Lemmatization</h3>
+          <p>Code identifiers rarely match prose word-for-word. DriftLens bridges this gap:</p>
+          <div class="code-box">1. Identifier Splitting:
+   DEFAULT_TIMEOUT -> ['default', 'timeout']
+
+2. Compound Word Decomposition:
+   'timeout' -> ['time', 'out']
+   'endpoint' -> ['end', 'point']
+
+3. Suffix Stripping & Lemmatization:
+   'timing out', 'timed' -> root 'time'
+
+4. O(1) Hash Set Lookups:
+   Pre-computes _wordsSet and _stemsSet for O(1) matching!</div>
         </div>
       </div>
       <div></div>
@@ -455,25 +525,35 @@
     <!-- SLIDE 7 -->
     <div class="slide">
       <div>
-        <div class="tagline">Unique Innovations</div>
-        <h2>Beyond Drift Detection: Standout Features</h2>
+        <div class="tagline">Mathematical Calibration</div>
+        <h2>Confidence Calibration Formula & Worked Example</h2>
+        <div class="subtitle">A weighted composite formula balancing deterministic AST facts, candidate overlap, and LLM reasoning.</div>
       </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <h3 style="color: var(--accent);">✨ Starter README Generator</h3>
-          <p>What if a project has zero documentation? DriftLens statically inspects all constants, CLI flags, and routes to synthesize an accurate starter README.md automatically.</p>
-          <div class="code-block">driftlens generate-readme --repo .</div>
+      <div class="grid-2">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">📐 The Composite Confidence Formula</h3>
+          <div class="code-box" style="font-size: 13px; color: var(--accent-green); font-weight: 700;">
+Confidence = 0.35 × S_det + 0.25 × S_cand + 0.40 × S_llm
+          </div>
+          <p style="margin-top: 12px; font-weight: 700; color: #fff;">Worked Numerical Calculation (Renamed Flag Example):</p>
+          <ul>
+            <li><b>S_det = 1.0:</b> Hard AST shift: CLI flag renamed from '--timeout' to '--deadline'.</li>
+            <li><b>S_cand = 0.90:</b> Candidate chunk explicitly matches old flag '--timeout' in 'CLI Options'.</li>
+            <li><b>S_llm = 0.97:</b> Qwen 2.5 7B semantic reasoning confirms direct factual contradiction.</li>
+            <li><b>Calculation:</b> 0.35(1.0) + 0.25(0.90) + 0.40(0.97) = 0.35 + 0.225 + 0.388 = <b>0.963 (96%)</b></li>
+          </ul>
+          <p style="margin-top: 10px; color: var(--accent-amber); font-weight: 700; font-size: 12px;">🛡️ Strict 0.60 Confidence Threshold: Scores below 60% are discarded as noise.</p>
         </div>
 
-        <div class="card">
-          <h3 style="color: var(--accent-green);">🌐 Visual Impact Graph</h3>
-          <p>Interactive SVG dependency blast radius graph maps code changes to affected documentation sections. Visualizes exactly where code changes radiate impact into documentation.</p>
-        </div>
-
-        <div class="card">
-          <h3 style="color: var(--accent-amber);">⚡ 1-Click Auto-Remediation</h3>
-          <p>Maintainers don't just get an alert — they can click <b>'Apply Fix'</b> directly in the Web Studio or download a git <code style="color: #fff;">.patch</code> file to apply the correction in 1 second.</p>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">🚦 Actionable Severity Tiers</h3>
+          <ul>
+            <li><b style="color: var(--accent-rose);">🔴 HIGH SEVERITY (Blocks CI):</b> Direct factual contradiction: renamed flag, altered default, or deleted route. Exits with code 1, blocking PR merge.</li>
+            <li><b style="color: var(--accent-amber);">🟡 MEDIUM SEVERITY (Warning):</b> Indirect semantic shift or parameter nuance. Flags PR with non-blocking warning annotation.</li>
+            <li><b style="color: var(--accent-cyan);">⚪ LOW SEVERITY (Info):</b> Minor stylistic or contextual documentation suggestions.</li>
+            <li><b style="color: var(--accent-green);">🛡️ Zero False Alarm Shield:</b> If the developer updated the documentation sentence in the same PR, DriftLens detects it and suppresses the finding.</li>
+          </ul>
         </div>
       </div>
       <div></div>
@@ -482,37 +562,53 @@
     <!-- SLIDE 8 -->
     <div class="slide">
       <div>
-        <div class="tagline">Production Readiness</div>
-        <h2>Performance & CI/CD Integration</h2>
+        <div class="tagline">Benchmark Verification</div>
+        <h2>6 Golden Evaluation Demos (100% Hackathon Coverage)</h2>
+        <div class="subtitle">Live dynamic execution against all Problem 5 evaluation categories in < 5ms.</div>
       </div>
 
-      <div class="grid-4" style="margin-bottom: 24px;">
-        <div class="card" style="text-align: center;">
-          <div class="stat-number">70</div>
-          <div class="stat-label">Unit & Integration Tests</div>
+      <div class="grid-3">
+        <div class="card card-rose">
+          <h3 style="color: var(--accent-rose);">1. Renamed CLI Flag</h3>
+          <div class="code-box">cli.py: --timeout -> --deadline
+Doc: 'Use --timeout to stop jobs'
+Status: FAIL (High, 98% Conf)
+Fix: 'Use --deadline to stop jobs'</div>
         </div>
-        <div class="card" style="text-align: center;">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">Test Pass Rate (Vitest)</div>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">2. Changed Default</h3>
+          <div class="code-box">config.js: DEFAULT_TIMEOUT = 30 -> 60
+Doc: 'Default timeout is 30s'
+Status: FAIL (High, 93% Conf)
+Fix: 'Default timeout is 60s'</div>
         </div>
-        <div class="card" style="text-align: center;">
-          <div class="stat-number">5ms</div>
-          <div class="stat-label">Benchmark Suite Duration</div>
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">3. False-Positive Control</h3>
+          <div class="code-box">utils.js: Internal math refactor
+Doc: 'Fast calculation utilities'
+Status: PASS (0 Findings)
+Proof: Zero false alarms on refactors!</div>
         </div>
-        <div class="card" style="text-align: center;">
-          <div class="stat-number" style="font-size: 26px; color: var(--accent-amber); padding-top: 10px;">Qwen 2.5 7B</div>
-          <div class="stat-label">Open-Weight AI Model</div>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">4. Config Table Drift</h3>
+          <div class="code-box">config.js: TIMEOUT_SECONDS = 30 -> 60
+Doc: | TIMEOUT_SECONDS | 30 |
+Status: FAIL (High, 97% Conf)
+Fix: Updates table row to 60</div>
         </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <h3>📦 Reusable GitHub Action (<code style="color: #fff;">action.yml</code>)</h3>
-          <p>Any GitHub repository can add DriftLens with 3 lines of YAML to automatically annotate Pull Requests with detected documentation drift.</p>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">5. API Parameter Signature</h3>
+          <div class="code-box">api.js: registerUser(email, pass, tenantId)
+Doc: 'call registerUser(email, password)'
+Status: FAIL (High, 91% Conf)
+Fix: Updates parameter list</div>
         </div>
-        <div class="card">
-          <h3>⚡ Engineered Optimizations</h3>
-          <p>O(1) token hash sets, parallel async file walking, and concurrent LLM worker pool deliver instantaneous feedback.</p>
+        <div class="card card-rose">
+          <h3 style="color: var(--accent-rose);">6. Deleted Route</h3>
+          <div class="code-box">routes.js: Deleted /api/v1/legacy-export
+Doc: 'Use /api/v1/legacy-export for CSV'
+Status: FAIL (High, 90% Conf)
+Fix: Flags obsolete route references</div>
         </div>
       </div>
       <div></div>
@@ -521,18 +617,208 @@
     <!-- SLIDE 9 -->
     <div class="slide">
       <div>
-        <div class="tagline">Summary</div>
-        <h2>Why DriftLens Wins Problem 5</h2>
+        <div class="tagline">Precision Engineering</div>
+        <h2>False-Positive Control & The Same-PR Shield</h2>
+        <div class="subtitle">Distinguishing between changes that need documentation updates vs those that are already handled.</div>
       </div>
 
-      <div class="card" style="padding: 32px;">
-        <ul style="font-size: 16px; line-height: 1.8; color: var(--text);">
-          <li><b>Solves the Real Challenge:</b> Catches drift in explanatory prose, configuration tables, and API tutorials where standard code-block runners are blind.</li>
-          <li><b>Pre-Correction Detection:</b> Detects inconsistencies on the code change commit <i>before</i> any corrective documentation commit is created.</li>
-          <li><b>Zero Hallucinations:</b> Deterministic AST/diff parsing anchors all file paths and line ranges; the AI model only performs bounded semantic reasoning.</li>
-          <li><b>100% Hackathon Rule Compliant:</b> Powered strictly by open-weight Qwen 2.5 7B. Zero closed/proprietary APIs.</li>
-          <li><b>Full Developer Experience:</b> CLI + Reusable GitHub Action + Interactive Web Studio with Blast Radius Graph + 1-Click Auto-Fix + Starter README Generator.</li>
-        </ul>
+      <div class="grid-2">
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">🛡️ The Same-PR Update Shield</h3>
+          <p><b>Scenario:</b> A conscientious developer bumps <code style="color:#fff;">DEFAULT_TIMEOUT = 60</code> and updates <code style="color:#fff;">README.md</code> to '60 seconds' in the same commit.</p>
+          <ul>
+            <li><b>Hunk-Aware Proximity:</b> DriftLens checks whether documentation changes in the PR overlap with the affected sentence lines.</li>
+            <li><b>New Value Verification:</b> If the added lines in the doc hunk already contain the new value ('60') or renamed flag ('--deadline'), drift is suppressed.</li>
+            <li><b>Sentence Deletion Verification:</b> If the obsolete statement was removed in the documentation diff, DriftLens acknowledges the fix.</li>
+            <li><b>The Result:</b> Zero duplicate warnings when developers do their job correctly!</li>
+          </ul>
+        </div>
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">⚡ Non-Functional Code Change Filtering</h3>
+          <ul>
+            <li><b>Comments Are Not Entities:</b> Code comments like '// TODO: change --timeout' are ignored so comments never trigger false drift.</li>
+            <li><b>Whitespace & Formatting Immunity:</b> Internal code refactorings that preserve entity values (indentation, code cleanups) produce 0 findings.</li>
+            <li><b>Test File Isolation:</b> Changes inside tests/, *.spec.js, or __tests__/ are automatically categorized as 'tests' and ignored for public documentation drift.</li>
+            <li><b>Strict Value Equality Check:</b> If removed.value === added.value, the entity is recognized as unchanged and skipped immediately.</li>
+          </ul>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide">
+      <div>
+        <div class="tagline">Complex Parsing</div>
+        <h2>Parsing Structured Markdown Tables & API Signatures</h2>
+        <div class="subtitle">Moving beyond plain paragraph text: How DriftLens parses tabular data and function signatures.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">📊 Markdown Table Row Parser</h3>
+          <p>Markdown tables present a major challenge for standard linters because values are split across column pipes (|):</p>
+          <ul>
+            <li><b>Header & Delimiter Detection:</b> Parses <code style="color:#fff;">| Setting | Default | Description |</code> and skips delimiter rows (<code style="color:#fff;">|---|---|</code>).</li>
+            <li><b>Row Data Objectification:</b> Transforms each row into key-value pairs: <code style="color:#fff;">{ Setting: 'TIMEOUT_SECONDS', Default: '30' }</code></li>
+            <li><b>Precise Line Number Attribution:</b> Tags the exact row line number in the source file, allowing 1-click in-table replacement.</li>
+          </ul>
+        </div>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">🧩 Function Parameter Signature AST</h3>
+          <p>Detecting when a function signature changes parameters without renaming the function:</p>
+          <ul>
+            <li><b>Regex AST Pattern:</b> <code style="color:#fff;">function fnName(params) | def fnName(params) | const fnName = (params) =></code></li>
+            <li><b>Parameter Signature Capture:</b> Stores value as 'registerUser(email, password)' vs 'registerUser(email, password, tenantId)'</li>
+            <li><b>Signature Comparison:</b> Detects parameter addition or deletion even when the function name itself remains unchanged.</li>
+            <li><b>Accurate Remediation:</b> Replaces the obsolete parameter list in prose tutorials while preserving contextual wording.</li>
+          </ul>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide">
+      <div>
+        <div class="tagline">Standout Innovation</div>
+        <h2>Starter README.md Generator for Zero-Doc Codebases</h2>
+        <div class="subtitle">What happens if a project has no documentation at all? DriftLens synthesizes one from verified code implementation.</div>
+      </div>
+
+      <div class="card card-cyan" style="margin-bottom: 20px;">
+        <h3 style="color: var(--accent-cyan);">✨ Instant Codebase Documentation Synthesis</h3>
+        <div class="code-box">driftlens generate-readme --repo ./my-project > README.md</div>
+        <p style="margin-top: 10px;">Instead of leaving repositories with missing documentation, DriftLens inspects the codebase, extracts runtime configurations, CLI flags, and routes, and automatically generates a structured starter README.md.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">⚙️ Configuration Table</h3>
+          <p>Extracts DEFAULT_TIMEOUT, MAX_RETRIES, PORT from code and formats them into a clean Markdown table with source file provenance.</p>
+        </div>
+        <div class="card card-purple">
+          <h3 style="color: var(--accent-purple);">💻 CLI Arguments Table</h3>
+          <p>Discovers all argparse and commander flags (--timeout, --verbose) and generates an accurate options reference table.</p>
+        </div>
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">🔌 API Endpoints & Routes</h3>
+          <p>Extracts Express/Flask endpoints (/api/v1/...) and public exported functions with quickstart instructions.</p>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide">
+      <div>
+        <div class="tagline">Interactive Studio</div>
+        <h2>Visual Blast Radius Impact Graph & 1-Click Auto-Fix</h2>
+        <div class="subtitle">Giving developers a visual interactive studio to explore drift impact and remediate issues in seconds.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">🌐 SVG Documentation Blast Radius Graph</h3>
+          <ul>
+            <li><b>Visual Dependency Mapping:</b> Connects changed source code files (e.g. cli.py) on the left to affected documentation sections (e.g. CLI Options) on the right.</li>
+            <li><b>Interactive Bezier Curves:</b> Dynamic SVG curves visually show where code changes radiate blast radius impact into documentation.</li>
+            <li><b>Color-Coded Status Nodes:</b> Red nodes indicate high-severity drift; green nodes indicate validated documentation harmony.</li>
+            <li><b>Live Web Studio:</b> Runs locally on <code style="color:#fff;">http://localhost:3000</code> with real-time diff editing and preset scenario buttons.</li>
+          </ul>
+        </div>
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">⚡ 1-Click Auto-Remediation & Patches</h3>
+          <ul>
+            <li><b>Instant In-Browser Correction:</b> Developers click 'Apply Fix' directly in the Web Studio; DriftLens updates the documentation textarea in real-time.</li>
+            <li><b>Downloadable Git .patch Files:</b> Generates standard unified .patch files (POST /api/fix/patch) ready to apply via <code style="color:#fff;">git apply fix.patch</code>.</li>
+            <li><b>GitHub PR Review Suggestions:</b> Outputs native GitHub Markdown ```suggestion blocks so maintainers can accept documentation fixes with 1 click on GitHub.</li>
+          </ul>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide">
+      <div>
+        <div class="tagline">Production Readiness</div>
+        <h2>Performance Engineering, Benchmarks & CI/CD</h2>
+        <div class="subtitle">Built for speed, scalability, and seamless integration into developer workflows.</div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom: 20px;">
+        <div class="card card-green" style="text-align: center;">
+          <div class="stat-number" style="color: var(--accent-green);">70</div>
+          <div class="stat-label">Unit & Integration Tests</div>
+        </div>
+        <div class="card card-cyan" style="text-align: center;">
+          <div class="stat-number" style="color: var(--accent-cyan);">100%</div>
+          <div class="stat-label">Test Pass Rate (Vitest)</div>
+        </div>
+        <div class="card card-green" style="text-align: center;">
+          <div class="stat-number" style="color: var(--accent-green);">5ms</div>
+          <div class="stat-label">Live Benchmark Duration</div>
+        </div>
+        <div class="card card-purple" style="text-align: center;">
+          <div class="stat-number" style="font-size: 26px; color: var(--accent-purple); padding-top: 6px;">Qwen 2.5 7B</div>
+          <div class="stat-label">Open-Weight AI Model</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">⚡ Algorithmic & I/O Optimizations</h3>
+          <ul>
+            <li><b>O(1) Token Sets:</b> Pre-computed token and stem sets eliminate repeated string parsing.</li>
+            <li><b>Worker Pool Concurrency:</b> Evaluates candidate pairs in parallel without blocking.</li>
+            <li><b>Parallel Async File Traversal:</b> Promise.all reads repositories concurrently in milliseconds.</li>
+            <li><b>In-Memory RAM Caching:</b> Sub-millisecond response for golden scenarios.</li>
+          </ul>
+        </div>
+        <div class="card card-amber">
+          <h3 style="color: var(--accent-amber);">📦 Reusable GitHub Action (<code style="color:#fff;">action.yml</code>)</h3>
+          <div class="code-box">- name: DriftLens Check
+  uses: Marwadi-me/Driftlens@main
+  with:
+    base: ${{ github.event.pull_request.base.sha }}
+    head: ${{ github.event.pull_request.head.sha }}
+    min-confidence: '0.60'</div>
+          <p style="margin-top: 8px;">Installs in any repo in 3 lines. Blocks merging on HIGH severity drift.</p>
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide">
+      <div>
+        <div class="tagline">Summary & Defense</div>
+        <h2>Conclusion & Hackathon Judge Defense Sheet</h2>
+        <div class="subtitle">Summary of why DriftLens wins Problem 5 and quick answers to expected judge inquiries.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-green">
+          <h3 style="color: var(--accent-green);">🏆 Why DriftLens Wins Problem 5</h3>
+          <ul>
+            <li><b>Directly Solves the Real Problem:</b> Catches factual drift in explanatory prose, configuration tables, and API tutorials where doctests are blind.</li>
+            <li><b>Pre-Correction Verification:</b> Identifies the original documentation drift on the code commit before any corrective commit is created.</li>
+            <li><b>Zero Hallucinations:</b> Deterministic AST and diff parsing anchors all file paths and line ranges; the AI model only performs bounded semantic reasoning.</li>
+            <li><b>100% Hackathon Compliant:</b> Powered exclusively by open-weight Qwen 2.5 7B. Zero closed or proprietary model APIs.</li>
+            <li><b>Complete Developer Experience:</b> CLI + GitHub Action + Interactive Web Studio + SVG Impact Graph + 1-Click Fix + Starter README Generator.</li>
+          </ul>
+        </div>
+
+        <div class="card card-cyan">
+          <h3 style="color: var(--accent-cyan);">🛡️ Judge Q&A Defense Cheat Sheet</h3>
+          <ul>
+            <li><b style="color: var(--accent-amber);">Q: Why use an LLM instead of Grep / Regex?</b><br>A: Grep can find words, but cannot know if changing a number from 30 to 60 contradicts 'the system waits half a minute before timing out'.</li>
+            <li><b style="color: var(--accent-amber);">Q: How are false alarms minimized?</b><br>A: Same-PR shield suppresses warnings if the doc was already updated; composite formula discards scores below 60%.</li>
+            <li><b style="color: var(--accent-amber);">Q: Why not send the entire repo to the LLM?</b><br>A: Too slow, expensive, and prone to hallucinations. We isolate candidate pairs deterministically first.</li>
+            <li><b style="color: var(--accent-amber);">Q: Is this ready for real repositories?</b><br>A: Yes. 70 unit tests passing, action.yml available, and runs on any GitHub repository.</li>
+          </ul>
+        </div>
       </div>
       <div></div>
     </div>
@@ -543,11 +829,11 @@
   <div class="controls">
     <div>
       <a href="/" class="btn" style="text-decoration: none; margin-right: 12px;">← Back to Web Studio</a>
-      <span class="slide-counter" id="counter">Slide 1 of 9</span>
+      <span class="slide-counter" id="counter">Slide 1 of 14</span>
     </div>
     <div>
       <button class="btn" onclick="prevSlide()">◀ Previous</button>
-      <button class="btn" onclick="nextSlide()" style="background: var(--accent); color: #000; border-color: var(--accent); margin-left: 8px;">Next ▶</button>
+      <button class="btn" onclick="nextSlide()" style="background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); margin-left: 8px;">Next ▶</button>
     </div>
   </div>
 
