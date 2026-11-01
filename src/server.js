@@ -30,6 +30,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Download PPTX presentation directly
+app.get('/download/pptx', (req, res) => {
+  const pptxPath = path.join(projectRoot, 'DriftLens_Presentation.pptx');
+  res.download(pptxPath, 'DriftLens_Presentation.pptx');
+});
+
 const EXAMPLES_INPUTS = {
   'renamed-flag': { diff: 'examples/renamed-flag/input/patch.diff', doc: 'examples/renamed-flag/input/README.md' },
   'changed-default': { diff: 'examples/changed-default/input/patch.diff', doc: 'examples/changed-default/input/README.md' },
